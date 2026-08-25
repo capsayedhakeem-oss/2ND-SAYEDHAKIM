@@ -1,0 +1,3993 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#07131f">
+  <meta name="color-scheme" content="dark">
+  <title>VORTEX BULK — VHF Bridge Assistant</title>
+  <style>
+:root {
+  --navy-950: #030a11;
+  --navy-900: #07131f;
+  --navy-850: #0a1a29;
+  --navy-800: #0d2234;
+  --navy-700: #143149;
+  --line: rgba(157, 189, 211, 0.18);
+  --line-strong: rgba(157, 189, 211, 0.34);
+  --text: #f3f7fa;
+  --muted: #9db3c3;
+  --muted-2: #6f8a9e;
+  --gold: #d7b468;
+  --gold-bright: #f1cf7b;
+  --gold-dark: #79602d;
+  --green: #35d39b;
+  --green-soft: rgba(53, 211, 155, 0.13);
+  --amber: #ffbf47;
+  --amber-soft: rgba(255, 191, 71, 0.14);
+  --red: #ff5664;
+  --red-bright: #ff8590;
+  --red-soft: rgba(255, 86, 100, 0.14);
+  --blue: #56b8ff;
+  --blue-soft: rgba(86, 184, 255, 0.14);
+  --radius: 18px;
+  --radius-sm: 11px;
+  --shadow: 0 18px 45px rgba(0, 0, 0, 0.28);
+  --font: "Noto Sans Arabic", "Segoe UI", Tahoma, Arial, sans-serif;
+  --mono: "Roboto Mono", "SFMono-Regular", Consolas, monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  background: var(--navy-950);
+}
+
+body {
+  min-width: 320px;
+  margin: 0;
+  color: var(--text);
+  background:
+    radial-gradient(circle at 12% 0%, rgba(40, 101, 139, 0.22), transparent 30rem),
+    radial-gradient(circle at 90% 20%, rgba(188, 147, 62, 0.09), transparent 28rem),
+    linear-gradient(180deg, #06111c 0%, #030a11 100%);
+  font-family: var(--font);
+  line-height: 1.55;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button,
+a,
+input,
+summary {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+summary:focus-visible {
+  outline: 3px solid rgba(86, 184, 255, 0.75);
+  outline-offset: 3px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.app-shell {
+  width: min(1400px, 100%);
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(24px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 5px 3px 18px;
+}
+
+.brand-block {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  direction: ltr;
+}
+
+.brand-mark {
+  position: relative;
+  display: grid;
+  width: 58px;
+  height: 58px;
+  place-items: center;
+  flex: 0 0 58px;
+  border: 1px solid var(--gold-dark);
+  border-radius: 50%;
+  color: var(--gold-bright);
+  background: linear-gradient(145deg, #112b3f, #07131f);
+  box-shadow: inset 0 0 0 4px #07131f, inset 0 0 0 5px rgba(215, 180, 104, 0.4), 0 7px 25px rgba(0, 0, 0, 0.35);
+  font-family: Georgia, serif;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.brand-mark::before,
+.brand-mark::after {
+  position: absolute;
+  width: 10px;
+  height: 1px;
+  content: "";
+  background: var(--gold);
+}
+
+.brand-mark::before {
+  left: 7px;
+}
+
+.brand-mark::after {
+  right: 7px;
+}
+
+.eyebrow,
+.section-kicker {
+  margin: 0 0 2px;
+  color: var(--gold);
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+}
+
+.topbar h1 {
+  margin: 0;
+  font-size: clamp(24px, 4vw, 35px);
+  line-height: 1.05;
+  letter-spacing: 0.055em;
+}
+
+.subhead {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.13em;
+}
+
+.header-badges,
+.state-pills {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.badge,
+.state-pill {
+  display: inline-flex;
+  min-height: 30px;
+  align-items: center;
+  justify-content: center;
+  padding: 5px 10px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+.badge-neutral {
+  border-color: var(--line-strong);
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.badge-danger {
+  border-color: rgba(255, 86, 100, 0.42);
+  color: var(--red-bright);
+  background: var(--red-soft);
+}
+
+.badge-warning {
+  border-color: rgba(255, 191, 71, 0.38);
+  color: var(--amber);
+  background: var(--amber-soft);
+}
+
+.safety-banner {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 13px 16px;
+  border: 1px solid rgba(255, 191, 71, 0.3);
+  border-radius: var(--radius-sm);
+  background: linear-gradient(90deg, rgba(255, 191, 71, 0.13), rgba(255, 191, 71, 0.04));
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.18);
+}
+
+.safety-icon {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  flex: 0 0 32px;
+  border: 1px solid rgba(255, 191, 71, 0.5);
+  border-radius: 50%;
+  color: #111820;
+  background: var(--amber);
+  font-family: var(--mono);
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.safety-banner div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px 9px;
+}
+
+.safety-banner strong {
+  color: #ffe0a0;
+}
+
+.safety-banner span:not(.safety-icon) {
+  color: #d2c3a5;
+  font-size: 13px;
+}
+
+.quick-nav {
+  position: sticky;
+  z-index: 20;
+  top: max(0px, env(safe-area-inset-top));
+  display: flex;
+  gap: 7px;
+  margin: 13px 0 16px;
+  padding: 7px;
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: rgba(4, 13, 22, 0.92);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(14px);
+  scrollbar-width: none;
+}
+
+.quick-nav::-webkit-scrollbar {
+  display: none;
+}
+
+.quick-nav a {
+  min-width: max-content;
+  padding: 8px 13px;
+  border-radius: 8px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.quick-nav a:active {
+  color: var(--text);
+  background: var(--navy-700);
+}
+
+main {
+  display: grid;
+  gap: 16px;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.12fr) minmax(350px, 0.88fr);
+  gap: 16px;
+  scroll-margin-top: 78px;
+}
+
+.panel {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background:
+    linear-gradient(145deg, rgba(17, 42, 61, 0.73), rgba(6, 18, 29, 0.92)),
+    var(--navy-900);
+  box-shadow: var(--shadow), inset 0 1px rgba(255, 255, 255, 0.035);
+}
+
+.monitor-panel,
+.next-event-panel,
+.route-panel,
+.data-panel,
+.scripts-panel {
+  padding: clamp(16px, 2.5vw, 24px);
+}
+
+.panel-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 15px;
+  margin-bottom: 17px;
+}
+
+.panel-heading h2 {
+  margin: 0;
+  font-size: clamp(19px, 2.8vw, 25px);
+  line-height: 1.3;
+}
+
+.state-pill {
+  min-height: 32px;
+  padding-inline: 12px;
+}
+
+.state-off {
+  border-color: var(--line-strong);
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.state-on {
+  border-color: rgba(53, 211, 155, 0.4);
+  color: #8affd5;
+  background: var(--green-soft);
+}
+
+.state-wait {
+  border-color: rgba(255, 191, 71, 0.38);
+  color: var(--amber);
+  background: var(--amber-soft);
+}
+
+.state-error {
+  border-color: rgba(255, 86, 100, 0.42);
+  color: var(--red-bright);
+  background: var(--red-soft);
+}
+
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 9px;
+}
+
+.metric {
+  min-height: 98px;
+  padding: 13px;
+  border: 1px solid rgba(157, 189, 211, 0.13);
+  border-radius: 12px;
+  background: rgba(1, 8, 14, 0.38);
+}
+
+.metric-wide {
+  grid-column: 1 / -1;
+  min-height: 84px;
+}
+
+.metric-label {
+  display: block;
+  margin-bottom: 10px;
+  color: var(--muted-2);
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.13em;
+}
+
+.metric strong {
+  color: #f8fcff;
+  font-family: var(--mono);
+  font-size: clamp(20px, 4vw, 29px);
+  font-variant-numeric: tabular-nums;
+}
+
+.metric .metric-position {
+  display: block;
+  overflow: hidden;
+  font-size: clamp(16px, 3vw, 23px);
+  direction: ltr;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.metric small {
+  display: block;
+  margin-top: 2px;
+  color: var(--muted-2);
+  font-size: 10px;
+}
+
+.status-line,
+.quality-warning {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-inline-start: 3px solid var(--blue);
+  border-radius: 6px;
+  color: #b9d7ea;
+  background: var(--blue-soft);
+  font-size: 12px;
+}
+
+.quality-warning {
+  border-inline-start-color: var(--red);
+  color: #ffc3c8;
+  background: var(--red-soft);
+  font-weight: 800;
+}
+
+.sound-test-card {
+  margin-top: 13px;
+  padding: 13px;
+  border: 1px solid rgba(255, 191, 71, 0.28);
+  border-radius: 12px;
+  background: linear-gradient(100deg, rgba(255, 191, 71, 0.095), rgba(3, 11, 18, 0.35));
+}
+
+.sound-test-status {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.sound-test-status strong {
+  display: block;
+  font-size: 13px;
+}
+
+.sound-test-card p {
+  margin: 7px 0 10px;
+  color: #c3bba8;
+  font-size: 10px;
+}
+
+.sound-readout {
+  display: grid;
+  gap: 5px;
+  justify-items: end;
+  flex: 0 0 auto;
+}
+
+.sound-readout small {
+  color: var(--muted-2);
+  font-family: var(--mono);
+  font-size: 8px;
+  direction: ltr;
+}
+
+.sound-readout b {
+  color: var(--text);
+}
+
+.sound-state {
+  padding: 4px 8px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-size: 9px;
+  font-weight: 900;
+}
+
+.sound-state.is-unconfirmed {
+  border-color: rgba(255, 86, 100, 0.38);
+  color: var(--red-bright);
+  background: var(--red-soft);
+}
+
+.sound-state.is-confirmed {
+  border-color: rgba(53, 211, 155, 0.38);
+  color: #8affd5;
+  background: var(--green-soft);
+}
+
+.sound-test-actions {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 8px;
+}
+
+.btn-confirm-sound {
+  border-color: rgba(53, 211, 155, 0.5);
+  color: #b6ffe5;
+  background: rgba(24, 116, 86, 0.48);
+}
+
+.control-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 9px;
+  margin-top: 16px;
+}
+
+.btn {
+  min-height: 48px;
+  padding: 11px 15px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  color: var(--text);
+  background: var(--navy-700);
+  font-weight: 900;
+  cursor: pointer;
+  transition: transform 120ms ease, border-color 120ms ease, background 120ms ease, opacity 120ms ease;
+}
+
+.btn:active:not(:disabled) {
+  transform: translateY(1px) scale(0.99);
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.42;
+}
+
+.btn-primary {
+  border-color: #e6c373;
+  color: #11161a;
+  background: linear-gradient(180deg, #f0d28b, #c99e49);
+  box-shadow: 0 8px 20px rgba(202, 158, 73, 0.18);
+}
+
+.btn-secondary {
+  border-color: var(--line-strong);
+  color: #d6e2e9;
+  background: rgba(17, 49, 73, 0.64);
+}
+
+.btn-ack {
+  border-color: rgba(255, 191, 71, 0.56);
+  color: #251900;
+  background: var(--amber);
+}
+
+.btn-complete {
+  border-color: rgba(53, 211, 155, 0.42);
+  color: #b3ffe4;
+  background: rgba(22, 107, 80, 0.4);
+}
+
+.btn-small {
+  min-height: 36px;
+  padding: 7px 11px;
+  font-family: var(--mono);
+  font-size: 10px;
+}
+
+.btn-icon {
+  display: inline-block;
+  margin-inline-end: 5px;
+  font-family: Arial, sans-serif;
+}
+
+.next-event-panel {
+  position: relative;
+  overflow: hidden;
+  border-color: rgba(215, 180, 104, 0.28);
+  background:
+    radial-gradient(circle at 85% 20%, rgba(215, 180, 104, 0.13), transparent 16rem),
+    linear-gradient(145deg, rgba(18, 43, 61, 0.88), rgba(5, 15, 24, 0.96));
+}
+
+.next-event-panel::after {
+  position: absolute;
+  right: -44px;
+  bottom: -84px;
+  width: 190px;
+  height: 190px;
+  border: 1px solid rgba(215, 180, 104, 0.08);
+  border-radius: 50%;
+  content: "";
+  box-shadow: 0 0 0 28px rgba(215, 180, 104, 0.025), 0 0 0 56px rgba(215, 180, 104, 0.018);
+  pointer-events: none;
+}
+
+.event-topline {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.event-counter {
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 12px;
+}
+
+.distance-block {
+  display: grid;
+  min-width: 92px;
+  padding: 10px 13px;
+  border: 1px solid rgba(215, 180, 104, 0.25);
+  border-radius: 12px;
+  text-align: center;
+  background: rgba(2, 9, 15, 0.38);
+}
+
+.distance-block span,
+.distance-block small {
+  color: var(--muted);
+  font-size: 9px;
+}
+
+.distance-block strong {
+  direction: ltr;
+  color: var(--gold-bright);
+  font-family: var(--mono);
+  font-size: 27px;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.event-title {
+  position: relative;
+  z-index: 1;
+  margin: 17px 0 15px;
+  font-family: var(--mono);
+  font-size: clamp(19px, 3.8vw, 29px);
+  line-height: 1.25;
+  direction: ltr;
+  text-align: left;
+}
+
+.call-target {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: stretch;
+}
+
+.call-target > div:first-child {
+  display: grid;
+  align-content: center;
+  min-width: 0;
+  padding: 13px 15px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: rgba(0, 7, 12, 0.32);
+  direction: ltr;
+  text-align: left;
+}
+
+.call-target span {
+  color: var(--muted-2);
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+}
+
+.call-target strong {
+  overflow: hidden;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: clamp(18px, 3.5vw, 25px);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.channel-display {
+  display: grid;
+  min-width: 112px;
+  place-items: center;
+  padding: 10px 16px;
+  border: 1px solid #e8c56f;
+  border-radius: 11px;
+  color: #171109;
+  background: linear-gradient(160deg, #f2d585, #c79942);
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.45), 0 10px 24px rgba(201, 158, 73, 0.16);
+  font-family: var(--mono);
+  font-size: clamp(21px, 4vw, 31px);
+  font-weight: 950;
+  direction: ltr;
+}
+
+.event-action {
+  position: relative;
+  z-index: 1;
+  margin: 14px 0 5px;
+  color: var(--gold-bright);
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  direction: ltr;
+  text-align: left;
+}
+
+.event-note {
+  position: relative;
+  z-index: 1;
+  min-height: 42px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.stage-strip {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 14px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(0, 8, 14, 0.42);
+}
+
+.stage-strip span {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.stage-strip strong {
+  color: var(--blue);
+  font-family: var(--mono);
+  font-size: 11px;
+  direction: ltr;
+}
+
+.event-controls {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 9px;
+  margin-top: 14px;
+}
+
+.complete-hint {
+  position: relative;
+  z-index: 1;
+  margin: 8px 2px 0;
+  color: var(--muted-2);
+  font-size: 10px;
+}
+
+.alarm-panel {
+  position: sticky;
+  z-index: 25;
+  top: calc(max(0px, env(safe-area-inset-top)) + 64px);
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 15px;
+  align-items: center;
+  padding: 14px 16px;
+  border: 2px solid var(--red);
+  border-radius: 15px;
+  background: linear-gradient(105deg, #45121a, #1a080d 62%);
+  box-shadow: 0 14px 38px rgba(255, 0, 42, 0.26), inset 0 0 30px rgba(255, 86, 100, 0.08);
+  animation: alarm-border 1s infinite alternate;
+}
+
+.alarm-beacon {
+  width: 34px;
+  height: 34px;
+  border: 8px solid rgba(255, 255, 255, 0.7);
+  border-radius: 50%;
+  background: var(--red);
+  box-shadow: 0 0 0 0 rgba(255, 86, 100, 0.7);
+  animation: beacon 1.15s infinite;
+}
+
+.alarm-copy {
+  min-width: 0;
+}
+
+.alarm-copy p {
+  margin: 0;
+  color: var(--red-bright);
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+}
+
+.alarm-copy h2 {
+  margin: 1px 0;
+  font-size: 19px;
+}
+
+.alarm-copy strong {
+  display: block;
+  overflow: hidden;
+  color: #fff;
+  font-family: var(--mono);
+  font-size: 13px;
+  direction: ltr;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.alarm-ack {
+  min-width: 130px;
+}
+
+@keyframes beacon {
+  60% { box-shadow: 0 0 0 14px rgba(255, 86, 100, 0); }
+  100% { box-shadow: 0 0 0 20px rgba(255, 86, 100, 0); }
+}
+
+@keyframes alarm-border {
+  from { border-color: #ff5664; }
+  to { border-color: #ffbdc3; }
+}
+
+.route-panel,
+.sector-panel,
+.data-panel,
+.scripts-panel {
+  scroll-margin-top: 78px;
+}
+
+.route-progress {
+  height: 5px;
+  margin: 3px 2px 15px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.route-progress span {
+  display: block;
+  width: 12.5%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--gold-dark), var(--gold-bright));
+  transition: width 300ms ease;
+}
+
+.cue-list {
+  display: grid;
+  gap: 8px;
+}
+
+.cue-card {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1.65fr) minmax(145px, 0.65fr) 64px;
+  gap: 12px;
+  align-items: center;
+  width: 100%;
+  min-height: 78px;
+  padding: 11px;
+  border: 1px solid rgba(157, 189, 211, 0.13);
+  border-radius: 12px;
+  color: var(--text);
+  text-align: inherit;
+  background: rgba(2, 10, 17, 0.32);
+  cursor: pointer;
+}
+
+.cue-card.is-current {
+  border-color: rgba(215, 180, 104, 0.52);
+  background: linear-gradient(90deg, rgba(215, 180, 104, 0.12), rgba(2, 10, 17, 0.34));
+  box-shadow: inset 4px 0 var(--gold);
+}
+
+.cue-card.is-complete {
+  border-color: rgba(53, 211, 155, 0.24);
+  background: rgba(53, 211, 155, 0.045);
+}
+
+.cue-card.is-complete .cue-index {
+  border-color: rgba(53, 211, 155, 0.48);
+  color: #8affd5;
+  background: var(--green-soft);
+}
+
+.cue-index {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.025);
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.cue-main,
+.cue-call {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.cue-main strong,
+.cue-call b {
+  overflow: hidden;
+  font-family: var(--mono);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  direction: ltr;
+  text-align: left;
+}
+
+.cue-main strong {
+  font-size: 13px;
+}
+
+.cue-main small {
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cue-call {
+  padding-inline-start: 12px;
+  border-inline-start: 1px solid var(--line);
+  direction: ltr;
+  text-align: left;
+}
+
+.cue-call b {
+  color: var(--gold-bright);
+  font-size: 12px;
+}
+
+.cue-call em {
+  color: #fff;
+  font-family: var(--mono);
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 950;
+}
+
+.cue-status {
+  padding: 5px 7px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 900;
+  text-align: center;
+}
+
+.cue-card.is-current .cue-status {
+  border-color: rgba(215, 180, 104, 0.4);
+  color: var(--gold-bright);
+  background: rgba(215, 180, 104, 0.1);
+}
+
+.cue-card.is-complete .cue-status {
+  border-color: rgba(53, 211, 155, 0.35);
+  color: #8affd5;
+}
+
+.route-warning-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 9px;
+  margin-top: 14px;
+}
+
+.route-warning {
+  padding: 12px 13px;
+  border: 1px solid rgba(255, 191, 71, 0.24);
+  border-radius: 10px;
+  background: rgba(255, 191, 71, 0.07);
+}
+
+.route-warning strong,
+.route-warning span {
+  display: block;
+}
+
+.route-warning strong {
+  color: var(--amber);
+  font-size: 12px;
+}
+
+.route-warning span {
+  margin-top: 3px;
+  color: #c9c2af;
+  font-size: 10px;
+}
+
+.route-warning.danger {
+  border-color: rgba(255, 86, 100, 0.24);
+  background: rgba(255, 86, 100, 0.07);
+}
+
+.route-warning.danger strong {
+  color: var(--red-bright);
+}
+
+.sector-rule {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+  padding: 11px 13px;
+  border: 1px solid rgba(255, 191, 71, 0.26);
+  border-radius: 10px;
+  color: #d8d2c2;
+  background: rgba(255, 191, 71, 0.07);
+  font-size: 11px;
+}
+
+.sector-rule strong {
+  flex: 0 0 auto;
+  color: var(--amber);
+}
+
+.sector-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgba(1, 8, 14, 0.4);
+}
+
+.sector-table {
+  width: 100%;
+  min-width: 1120px;
+  border-collapse: collapse;
+  direction: rtl;
+  table-layout: fixed;
+}
+
+.sector-table th,
+.sector-table td {
+  padding: 12px;
+  border-inline-start: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+
+.sector-table th:first-child,
+.sector-table td:first-child {
+  border-inline-start: 0;
+}
+
+.sector-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.sector-table th {
+  color: var(--gold-bright);
+  background: rgba(215, 180, 104, 0.09);
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  text-align: right;
+}
+
+.sector-table th:nth-child(1) { width: 10%; }
+.sector-table th:nth-child(2) { width: 14%; }
+.sector-table th:nth-child(3) { width: 29%; }
+.sector-table th:nth-child(4) { width: 27%; }
+.sector-table th:nth-child(5) { width: 20%; }
+
+.sector-table td > b,
+.sector-table td > strong,
+.sector-table td > em,
+.sector-table td > span {
+  display: block;
+}
+
+.sector-table td > b,
+.sector-table td > strong {
+  color: #f4f7f9;
+  font-family: var(--mono);
+  font-size: 11px;
+  direction: ltr;
+  text-align: left;
+}
+
+.sector-table td > em {
+  margin-top: 5px;
+  color: var(--gold-bright);
+  font-family: var(--mono);
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 950;
+  direction: ltr;
+  text-align: left;
+}
+
+.sector-table td > span {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.55;
+}
+
+.sector-table tbody tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.018);
+}
+
+.sector-table .sector-full-report {
+  background: rgba(215, 180, 104, 0.075);
+}
+
+.sector-table .sector-special-call {
+  background: rgba(87, 183, 255, 0.065);
+}
+
+.sector-table .sector-route-cue {
+  background: rgba(53, 211, 155, 0.05);
+}
+
+.sector-table .sector-current-end {
+  background: rgba(255, 191, 71, 0.065);
+}
+
+.sector-table .sector-not-route {
+  opacity: 0.72;
+  background: rgba(255, 86, 100, 0.04);
+}
+
+.sector-source-note {
+  margin: 9px 3px 0;
+  color: var(--muted-2);
+  font-size: 9px;
+  direction: ltr;
+  text-align: left;
+}
+
+.save-state {
+  padding: 5px 10px;
+  border: 1px solid rgba(53, 211, 155, 0.28);
+  border-radius: 999px;
+  color: #83eec7;
+  background: var(--green-soft);
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 11px;
+}
+
+.form-grid label {
+  display: grid;
+  gap: 6px;
+}
+
+.form-grid label > span {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.form-grid input {
+  width: 100%;
+  min-height: 48px;
+  padding: 10px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 9px;
+  color: var(--text);
+  background: rgba(1, 8, 14, 0.54);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.form-grid input::placeholder {
+  color: #627789;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.form-grid input:focus {
+  border-color: rgba(86, 184, 255, 0.75);
+  background: rgba(5, 23, 36, 0.8);
+}
+
+.form-grid input[readonly] {
+  color: #dce8ef;
+  border-color: rgba(215, 180, 104, 0.2);
+  background: rgba(215, 180, 104, 0.055);
+}
+
+.field-important {
+  grid-column: span 2;
+  padding: 10px;
+  border: 1px solid rgba(255, 86, 100, 0.28);
+  border-radius: 11px;
+  background: rgba(255, 86, 100, 0.055);
+}
+
+.field-important input {
+  border-color: rgba(255, 86, 100, 0.44);
+}
+
+.field-important small {
+  color: var(--red-bright);
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.form-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.form-actions p {
+  margin: 0;
+  color: var(--muted-2);
+  font-size: 10px;
+}
+
+.script-current-meta {
+  display: flex;
+  align-items: stretch;
+  border: 1px solid var(--line);
+  border-bottom: 0;
+  border-radius: 11px 11px 0 0;
+  overflow: hidden;
+  direction: ltr;
+}
+
+.script-current-meta span {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  padding: 10px 14px;
+  color: var(--gold-bright);
+  background: rgba(215, 180, 104, 0.08);
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.script-current-meta strong {
+  display: grid;
+  min-width: 95px;
+  place-items: center;
+  color: #111;
+  background: var(--gold);
+  font-family: var(--mono);
+  font-size: 17px;
+}
+
+.vhf-script {
+  min-height: 220px;
+  margin: 0;
+  padding: clamp(15px, 2.5vw, 22px);
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: 0 0 11px 11px;
+  color: #e8f2f8;
+  background:
+    repeating-linear-gradient(180deg, transparent 0, transparent 29px, rgba(157, 189, 211, 0.055) 30px),
+    rgba(1, 7, 12, 0.66);
+  font-family: var(--mono);
+  font-size: clamp(12px, 2.2vw, 15px);
+  line-height: 2;
+  white-space: pre-wrap;
+}
+
+.script-rule {
+  margin: 9px 2px 0;
+  color: var(--amber);
+  font-size: 10px;
+}
+
+.script-details {
+  margin-top: 13px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: rgba(1, 8, 14, 0.28);
+}
+
+.script-details summary {
+  padding: 13px 15px;
+  color: var(--muted);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.all-scripts {
+  display: grid;
+  gap: 10px;
+  padding: 0 12px 12px;
+}
+
+.script-card {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+}
+
+.script-card header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 9px 11px;
+  color: var(--gold-bright);
+  background: rgba(20, 49, 73, 0.5);
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 900;
+  direction: ltr;
+}
+
+.script-card pre {
+  margin: 0;
+  padding: 12px;
+  color: #cfdae1;
+  background: rgba(0, 5, 9, 0.38);
+  font-family: var(--mono);
+  font-size: 10px;
+  line-height: 1.75;
+  white-space: pre-wrap;
+}
+
+.final-warnings {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.final-warnings article {
+  padding: 14px;
+  border: 1px solid rgba(255, 191, 71, 0.23);
+  border-radius: 12px;
+  background: rgba(255, 191, 71, 0.06);
+}
+
+.final-warnings strong {
+  color: var(--amber);
+  font-size: 13px;
+}
+
+.final-warnings p {
+  margin: 4px 0 0;
+  color: #b5b0a3;
+  font-size: 10px;
+}
+
+.final-warnings .warning-red {
+  border-color: rgba(255, 86, 100, 0.25);
+  background: rgba(255, 86, 100, 0.06);
+}
+
+.final-warnings .warning-red strong {
+  color: var(--red-bright);
+}
+
+footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 18px;
+  padding: 17px 3px 3px;
+  border-top: 1px solid var(--line);
+  color: var(--muted-2);
+  font-family: var(--mono);
+  font-size: 9px;
+  direction: ltr;
+}
+
+footer strong {
+  color: var(--gold);
+  font-weight: 700;
+}
+
+.toast {
+  position: fixed;
+  z-index: 100;
+  right: max(16px, env(safe-area-inset-right));
+  bottom: max(18px, env(safe-area-inset-bottom));
+  max-width: calc(100vw - 32px);
+  padding: 11px 15px;
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  color: #fff;
+  background: rgba(12, 32, 48, 0.97);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.42);
+  font-size: 12px;
+  font-weight: 800;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(18px);
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.toast.error {
+  border-color: rgba(255, 86, 100, 0.5);
+  color: #ffd1d5;
+  background: rgba(65, 15, 22, 0.98);
+}
+
+@media (max-width: 950px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .cue-card {
+    grid-template-columns: 46px minmax(0, 1fr) 60px;
+  }
+
+  .cue-call {
+    grid-column: 2 / 3;
+    padding: 0;
+    border: 0;
+  }
+
+  .cue-status {
+    grid-column: 3 / 4;
+    grid-row: 1 / 3;
+  }
+}
+
+@media (max-width: 650px) {
+  .app-shell {
+    padding-inline: 10px;
+  }
+
+  .topbar {
+    align-items: flex-start;
+  }
+
+  .brand-mark {
+    width: 48px;
+    height: 48px;
+    flex-basis: 48px;
+    font-size: 15px;
+  }
+
+  .header-badges {
+    display: grid;
+    justify-items: end;
+  }
+
+  .badge,
+  .state-pill {
+    min-height: 27px;
+    padding: 4px 8px;
+    font-size: 8px;
+  }
+
+  .safety-banner {
+    align-items: flex-start;
+    padding: 11px;
+  }
+
+  .metric-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .control-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .control-grid .btn-primary {
+    grid-column: auto;
+  }
+
+  .call-target {
+    grid-template-columns: 1fr 105px;
+  }
+
+  .channel-display {
+    min-width: 105px;
+    padding-inline: 8px;
+  }
+
+  .alarm-panel {
+    grid-template-columns: auto 1fr;
+  }
+
+  .alarm-ack {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+
+  .route-warning-grid,
+  .final-warnings {
+    grid-template-columns: 1fr;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .field-important {
+    grid-column: auto;
+  }
+
+  .form-actions {
+    display: grid;
+  }
+
+  .form-actions .btn {
+    width: 100%;
+  }
+
+  footer {
+    display: grid;
+    justify-content: center;
+    text-align: center;
+  }
+}
+
+@media (max-width: 430px) {
+  .topbar h1 {
+    font-size: 22px;
+  }
+
+  .subhead {
+    font-size: 8px;
+  }
+
+  .header-badges .badge-neutral {
+    display: none;
+  }
+
+  .monitor-panel,
+  .next-event-panel,
+  .route-panel,
+  .sector-panel,
+  .data-panel,
+  .scripts-panel {
+    padding: 14px;
+  }
+
+  .panel-heading {
+    display: grid;
+  }
+
+  .state-pills {
+    justify-content: flex-start;
+  }
+
+  .metric {
+    min-height: 88px;
+    padding: 11px;
+  }
+
+  .event-controls {
+    grid-template-columns: 1fr;
+  }
+
+  .sound-test-status {
+    display: grid;
+  }
+
+  .sound-readout {
+    justify-items: start;
+  }
+
+  .sound-test-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .cue-card {
+    grid-template-columns: 40px minmax(0, 1fr);
+    gap: 8px;
+  }
+
+  .cue-index {
+    width: 36px;
+    height: 36px;
+  }
+
+  .cue-call {
+    grid-column: 2;
+  }
+
+  .cue-status {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .cue-main small {
+    white-space: normal;
+  }
+
+  .script-current-meta span {
+    font-size: 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+  }
+}
+
+</style>
+</head>
+<body>
+  <div class="app-shell" id="appShell">
+    <header class="topbar">
+      <div class="brand-block">
+        <div class="brand-mark" aria-hidden="true">
+          <span>VB</span>
+        </div>
+        <div>
+          <p class="eyebrow">BRIDGE OPERATIONS</p>
+          <h1>VORTEX BULK</h1>
+          <p class="subhead">VHF &amp; STRAITREP ASSISTANT</p>
+        </div>
+      </div>
+      <div class="header-badges" aria-label="حالة التطبيق">
+        <span class="badge badge-neutral">OFFLINE APP</span>
+        <span class="badge badge-danger">CH 10 DISABLED</span>
+      </div>
+    </header>
+
+    <aside class="safety-banner" role="alert">
+      <span class="safety-icon" aria-hidden="true">!</span>
+      <div>
+        <strong>مساعد تنبيهات فقط — ليس وسيلة ملاحة.</strong>
+        <span>طابق كل نقطة على الـECDIS واتبع تعليمات VTS المباشرة. نسخة الكمبيوتر تتطلب إبقاء Edge/Chrome والصفحة ظاهرين؛ تسليم S1–S6 يدوي فقط.</span>
+      </div>
+    </aside>
+
+    <nav class="quick-nav" aria-label="أقسام التطبيق">
+      <a href="#monitor">المراقبة</a>
+      <a href="#route">نقط النداء</a>
+      <a href="#sectors">كل السيكتورات</a>
+      <a href="#report-data">بيانات التقرير</a>
+      <a href="#scripts">نص النداء</a>
+    </nav>
+
+    <main>
+      <section class="dashboard-grid" id="monitor">
+        <article class="panel monitor-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="section-kicker">LIVE COMPUTER / BROWSER GPS</p>
+              <h2>حالة المراقبة</h2>
+            </div>
+            <div class="state-pills">
+              <span class="state-pill state-off" id="armedState">غير مسلح</span>
+              <span class="state-pill state-wait" id="gpsState">بانتظار GPS</span>
+            </div>
+          </div>
+
+          <div class="metric-grid">
+            <div class="metric metric-wide">
+              <span class="metric-label">POSITION</span>
+              <strong class="metric-position" id="positionValue">—</strong>
+            </div>
+            <div class="metric">
+              <span class="metric-label">ACCURACY</span>
+              <strong id="accuracyValue">—</strong>
+              <small>متر</small>
+            </div>
+            <div class="metric">
+              <span class="metric-label">FIX AGE</span>
+              <strong id="fixAgeValue">—</strong>
+              <small>ثانية</small>
+            </div>
+            <div class="metric">
+              <span class="metric-label">SPEED</span>
+              <strong id="speedValue">—</strong>
+              <small>kn</small>
+            </div>
+            <div class="metric">
+              <span class="metric-label">GOOD FIXES</span>
+              <strong id="goodFixValue">0 / 3</strong>
+              <small>للتسليح</small>
+            </div>
+          </div>
+
+          <div class="status-line" id="statusMessage" aria-live="polite">شغّل المراقبة واسمح بالموقع الدقيق.</div>
+          <div class="quality-warning hidden" id="qualityWarning" role="alert"></div>
+
+          <div class="sound-test-card" id="soundTestCard">
+            <div class="sound-test-status">
+              <div>
+                <span class="metric-label">MANDATORY SOUND CHECK</span>
+                <strong>اختبار الصوت قبل التسليح — والاهتزاز إن كان الجهاز يدعمه</strong>
+              </div>
+              <div class="sound-readout">
+                <span class="sound-state is-unconfirmed" id="soundConfirmState">غير مؤكد</span>
+                <small>ALARM VOLUME <b id="alarmVolumeValue">—</b></small>
+              </div>
+            </div>
+            <p>اضغط الاختبار وتأكد بنفسك إنك سمعت الصوت. الاهتزاز اختياري حسب إمكانيات الكمبيوتر؛ لن يعمل ARM قبل التأكيد.</p>
+            <div class="sound-test-actions">
+              <button class="btn btn-secondary" id="testButton" type="button">
+                <span class="btn-icon">♪</span>
+                تشغيل اختبار الصوت
+              </button>
+              <button class="btn btn-confirm-sound hidden" id="confirmSoundButton" type="button">
+                سمعت الصوت — تأكيد
+              </button>
+            </div>
+          </div>
+
+          <div class="control-grid">
+            <button class="btn btn-primary btn-large" id="startButton" type="button">
+              <span class="btn-icon">▶</span>
+              تشغيل GPS والإنذارات
+            </button>
+            <button class="btn btn-secondary" id="stopButton" type="button">
+              <span class="btn-icon">■</span>
+              إيقاف المراقبة
+            </button>
+          </div>
+        </article>
+
+        <article class="panel next-event-panel" id="nextEventPanel">
+          <div class="event-topline">
+            <div>
+              <p class="section-kicker">NEXT VERIFIED CUE</p>
+              <span class="event-counter" id="eventCounter">1 / 4</span>
+            </div>
+            <div class="distance-block">
+              <span>المسافة</span>
+              <strong id="distanceValue">—</strong>
+              <small>NM</small>
+            </div>
+          </div>
+
+          <h2 class="event-title" id="eventTitle">STRAITREP ENTRY — 100°40′E</h2>
+          <div class="call-target">
+            <div>
+              <span>CALL</span>
+              <strong id="stationValue">KLANG VTS</strong>
+            </div>
+            <div class="channel-display" id="channelValue">CH 66</div>
+          </div>
+          <p class="event-action" id="eventAction">FULL STRAITREP REPORT</p>
+          <p class="event-note" id="eventNote">الدخول الفعلي على WP8→WP9. لا تنتظر الوصول إلى WP9.</p>
+
+          <div class="stage-strip">
+            <span>مرحلة الإنذار</span>
+            <strong id="alarmStage">STANDBY</strong>
+          </div>
+
+          <div class="event-controls">
+            <button class="btn btn-ack" id="ackButton" type="button" disabled>
+              ACK / إسكات الإنذار
+            </button>
+            <button class="btn btn-complete" id="completeButton" type="button">
+              تم النداء — التالي
+            </button>
+          </div>
+          <p class="complete-hint">ACK يسكت الصوت فقط. اضغط «تم النداء» منفصلًا بعد إتمام الاتصال فعليًا.</p>
+        </article>
+      </section>
+
+      <section class="alarm-panel hidden" id="alarmPanel" aria-live="assertive" role="alert">
+        <div class="alarm-beacon" aria-hidden="true"></div>
+        <div class="alarm-copy">
+          <p>VHF CALL ALARM</p>
+          <h2 id="alarmTitle">ميعاد النداء</h2>
+          <strong id="alarmTarget">KLANG VTS — CH 66</strong>
+        </div>
+        <button class="btn btn-ack alarm-ack" id="alarmAckButton" type="button">ACK / إسكات</button>
+      </section>
+
+      <section class="panel route-panel" id="route">
+        <div class="panel-heading">
+          <div>
+            <p class="section-kicker">EASTBOUND · CURRENT ROUTE</p>
+            <h2>أربع نقط مؤكدة على مسار VORTEX BULK</h2>
+          </div>
+          <span class="badge badge-warning">S1–S6: HANDOVER ONLY</span>
+        </div>
+
+        <div class="route-progress" aria-hidden="true">
+          <span id="routeProgressFill"></span>
+        </div>
+        <div class="cue-list" id="cueList">
+          <button class="cue-card is-current" type="button" data-event-index="0">
+            <span class="cue-index">01</span>
+            <span class="cue-main">
+              <strong>STRAITREP ENTRY — 100°40′E</strong>
+              <small>تقاطع المسار: 02°58.114′N · 100°40.000′E — على WP8→WP9</small>
+            </span>
+            <span class="cue-call">
+              <b>KLANG VTS</b>
+              <em>CH 66</em>
+            </span>
+            <span class="cue-status">التالي</span>
+          </button>
+
+          <button class="cue-card" type="button" data-event-index="1">
+            <span class="cue-index">02</span>
+            <span class="cue-main">
+              <strong>PULAU IYU KECHIL LIGHT ABEAM</strong>
+              <small>Route cue: 01°12.805′N · 103°21.952′E — تقريبًا 0.9 NM بعد WP16</small>
+            </span>
+            <span class="cue-call">
+              <b>VTIS WEST</b>
+              <em>CH 73</em>
+            </span>
+            <span class="cue-status">قادم</span>
+          </button>
+
+          <button class="cue-card" type="button" data-event-index="2">
+            <span class="cue-index">03</span>
+            <span class="cue-main">
+              <strong>SECTOR 6 → SECTOR 7</strong>
+              <small>تقاطع المسار: 01°10.518′N · 103°25.689′E</small>
+            </span>
+            <span class="cue-call">
+              <b>JOHOR → VTIS WEST</b>
+              <em>CH 88 → 73</em>
+            </span>
+            <span class="cue-status">قادم</span>
+          </button>
+
+          <button class="cue-card" type="button" data-event-index="3">
+            <span class="cue-index">04</span>
+            <span class="cue-main">
+              <strong>SECTOR 7 → SECTOR 8 — 103°44.5′E</strong>
+              <small>تقاطع المسار: 01°06.374′N · 103°44.500′E</small>
+            </span>
+            <span class="cue-call">
+              <b>VTIS CENTRAL</b>
+              <em>CH 14</em>
+            </span>
+            <span class="cue-status">قادم</span>
+          </button>
+        </div>
+
+        <div class="route-warning-grid">
+          <div class="route-warning">
+            <strong>Confirmation of Arrival</strong>
+            <span>اتصل CH73 عند Pulau Iyu Kechil abeam، مع استمرار مراقبة Johor VTS على CH88 حتى تسليم S6→S7.</span>
+          </div>
+          <div class="route-warning danger">
+            <strong>CH10 غير مستخدم في الروت الحالي</strong>
+            <span>WP23 داخل Sector 8 قبل حد Sector 9. لا تنتقل CH10 إلا بأمر VTIS.</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel sector-panel" id="sectors">
+        <div class="panel-heading">
+          <div>
+            <p class="section-kicker">WEST TO EAST · SECTORS 1–9</p>
+            <h2>الدخول والنهاية والاستكمال للسيكتور التالي</h2>
+          </div>
+          <span class="badge badge-warning">ENC LINE / LIVE VTS HANDOVER CONTROLS</span>
+        </div>
+
+        <div class="sector-rule">
+          <strong>قاعدة التشغيل:</strong>
+          <span>تقرير STRAITREP الكامل عند دخول النظام أو عند طلب VTS. داخل S1–S6 لا يوجد موقع رقمي رسمي منشور لكل حد؛ استخدم خط السيكتور المصحح على الـENC وتعليمات التسليم المباشرة.</span>
+        </div>
+
+        <div class="sector-table-wrap">
+          <table class="sector-table">
+            <thead>
+              <tr>
+                <th>SECTOR</th>
+                <th>ACTIVE WATCH</th>
+                <th>الدخول / النداء</th>
+                <th>النهاية / التحويل</th>
+                <th>الاستكمال التالي</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="sector-full-report">
+                <td><b>S1</b><span>ANGSA</span></td>
+                <td><strong>KLANG VTS</strong><em>CH 66</em></td>
+                <td><b>100°40.000′E — FULL REPORT</b><span>تقاطع الروت: 02°58.114′N · 100°40.000′E على WP8→WP9.</span></td>
+                <td><span>خط S1/S2 المرسوم على الـENC أو تسليم KLANG VTS.</span></td>
+                <td><b>S2 JUGRA</b><span>KLANG VTS · CH 88</span></td>
+              </tr>
+              <tr>
+                <td><b>S2</b><span>JUGRA</span></td>
+                <td><strong>KLANG VTS</strong><em>CH 88</em></td>
+                <td><span>الدخول عند خط S1/S2 المصحح / live handover. نداء مختصر فقط إذا طُلب.</span></td>
+                <td><span>خط S2/S3 المرسوم على الـENC أو تسليم VTS.</span></td>
+                <td><b>S3 CAPE RACHADO</b><span>KLANG VTS · CH 84</span></td>
+              </tr>
+              <tr>
+                <td><b>S3</b><span>CAPE RACHADO</span></td>
+                <td><strong>KLANG VTS</strong><em>CH 84</em></td>
+                <td><span>الدخول عند خط S2/S3 المصحح / live handover. لا تكرر التقرير الكامل.</span></td>
+                <td><span>خط S3/S4 المرسوم على الـENC أو تسليم VTS.</span></td>
+                <td><b>S4 UNDAN</b><span>KLANG VTS · CH 61</span></td>
+              </tr>
+              <tr>
+                <td><b>S4</b><span>UNDAN</span></td>
+                <td><strong>KLANG VTS</strong><em>CH 61</em></td>
+                <td><span>الدخول عند خط S3/S4 المصحح / live handover. نداء مختصر عند الطلب.</span></td>
+                <td><span>خط S4/S5 المرسوم على الـENC أو تسليم VTS.</span></td>
+                <td><b>S5 SEGENTING</b><span>KLANG VTS · CH 88</span></td>
+              </tr>
+              <tr>
+                <td><b>S5</b><span>SEGENTING</span></td>
+                <td><strong>KLANG VTS</strong><em>CH 88</em></td>
+                <td><span>الدخول عند خط S4/S5 المصحح / live handover.</span></td>
+                <td><span>خط S5/S6 المرسوم على الـENC؛ القناة تظل 88 لكن المحطة تتحول إلى JOHOR VTS.</span></td>
+                <td><b>S6 PIAI</b><span>JOHOR VTS · CH 88</span></td>
+              </tr>
+              <tr class="sector-special-call">
+                <td><b>S6</b><span>PIAI</span></td>
+                <td><strong>JOHOR VTS</strong><em>CH 88</em></td>
+                <td><span>الدخول عند خط S5/S6 المصحح / تسليم KLANG→JOHOR.</span><b>نداء منفصل عند P. IYU KECHIL ABEAM: 01°12.805′N · 103°21.952′E إلى VTIS WEST CH73، مع استمرار CH88.</b></td>
+                <td><b>خط TG PIAI–P. KARIMUN KECIL</b><span>تقاطع الروت: 01°10.518′N · 103°25.689′E — تحويل 88→73 عند التسليم.</span></td>
+                <td><b>S7 VTIS WEST</b><span>SINGAPORE VTS · CH 73</span></td>
+              </tr>
+              <tr class="sector-route-cue">
+                <td><b>S7</b><span>VTIS WEST</span></td>
+                <td><strong>SINGAPORE VTS</strong><em>CH 73</em></td>
+                <td><b>S6/S7 HANDOVER</b><span>تقاطع الروت: 01°10.518′N · 103°25.689′E. نداء قصير بعد تسليم JOHOR فقط.</span></td>
+                <td><b>103°44.500′E</b><span>تقاطع الروت: 01°06.374′N · 103°44.500′E — تحويل 73→14 عند الخط أو تسليم أبكر.</span></td>
+                <td><b>S8 VTIS CENTRAL</b><span>SINGAPORE VTS · CH 14</span></td>
+              </tr>
+              <tr class="sector-current-end">
+                <td><b>S8</b><span>VTIS CENTRAL</span></td>
+                <td><strong>SINGAPORE VTS</strong><em>CH 14</em></td>
+                <td><b>103°44.500′E / LIVE HANDOVER</b><span>تقاطع الروت: 01°06.374′N · 103°44.500′E.</span></td>
+                <td><b>الروت الحالي ينتهي داخل S8 قبل S9.</b><span>لو استمررت شرقًا: حد S8/S9 عند 104°02.1′E أو حسب VTIS.</span></td>
+                <td><b>ابقَ CH14</b><span>Port/Pilot حسب الأمر. لا تفتح CH10 إلا بتوجيه VTIS.</span></td>
+              </tr>
+              <tr class="sector-not-route">
+                <td><b>S9</b><span>VTIS EAST</span></td>
+                <td><strong>SINGAPORE VTS</strong><em>CH 10</em></td>
+                <td><b>104°02.1′E / LIVE HANDOVER</b><span>للسفينة المستمرة شرقًا فقط؛ ليس ضمن الروت الحالي إلى الـpilot.</span></td>
+                <td><span>استمر حسب VTIS. 104°23′E نقطة دخول غربbound، وليست تقرير خروج eastbound روتينيًا.</span></td>
+                <td><b>OUTSIDE / NEXT AREA</b><span>حسب أمر VTIS والـENC والـpassage plan التالي.</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p class="sector-source-note">Verified aid dated 24 Aug 2026. Corrected ENC, latest Notices and live VTS instructions always control.</p>
+      </section>
+
+      <section class="panel data-panel" id="report-data">
+        <div class="panel-heading">
+          <div>
+            <p class="section-kicker">CACHED ON THIS DEVICE</p>
+            <h2>بيانات المركب والتقرير</h2>
+          </div>
+          <span class="save-state" id="saveState" aria-live="polite">محفوظ محليًا</span>
+        </div>
+
+        <form id="reportForm" autocomplete="off">
+          <div class="form-grid">
+            <label>
+              <span>اسم السفينة / Vessel</span>
+              <input id="shipName" name="shipName" value="VORTEX BULK" spellcheck="false" readonly>
+            </label>
+            <label>
+              <span>Call Sign</span>
+              <input id="callSign" name="callSign" value="V4ND7" dir="ltr" spellcheck="false" readonly>
+            </label>
+            <label>
+              <span>IMO Number</span>
+              <input id="imo" name="imo" value="9189926" dir="ltr" inputmode="numeric" readonly>
+            </label>
+            <label>
+              <span>MMSI</span>
+              <input id="mmsi" name="mmsi" value="341662002" dir="ltr" inputmode="numeric" readonly>
+            </label>
+            <label>
+              <span>Draft FWD (m)</span>
+              <input id="draftFwd" name="draftFwd" value="" dir="ltr" inputmode="decimal" placeholder="VERIFY LIVE">
+            </label>
+            <label>
+              <span>Draft AFT (m)</span>
+              <input id="draftAft" name="draftAft" value="" dir="ltr" inputmode="decimal" placeholder="VERIFY LIVE">
+            </label>
+            <label>
+              <span>Air Draft / Height (m)</span>
+              <input id="airDraft" name="airDraft" value="" dir="ltr" inputmode="decimal" placeholder="VERIFY LIVE">
+            </label>
+            <label>
+              <span>True Course (degrees)</span>
+              <input id="trueCourse" name="trueCourse" value="" dir="ltr" inputmode="numeric" placeholder="VERIFY ON ECDIS">
+            </label>
+            <label>
+              <span>Last Port</span>
+              <input id="lastPort" name="lastPort" value="" dir="ltr" placeholder="اتركه فارغًا لحين التأكيد">
+            </label>
+            <label>
+              <span>Next Port / Destination</span>
+              <input id="nextPort" name="nextPort" value="" dir="ltr" placeholder="اتركه فارغًا لحين التأكيد">
+            </label>
+            <label>
+              <span>ETA (LOCAL)</span>
+              <input id="eta" name="eta" value="" dir="ltr" placeholder="DD HHMM LT">
+            </label>
+            <label>
+              <span>Height changed from NOA?</span>
+              <input id="heightChanged" name="heightChanged" value="" dir="ltr" placeholder="NIL or new height — VERIFY">
+            </label>
+            <label class="field-important">
+              <span>Assigned Pilot Boarding Ground (PBG)</span>
+              <input id="pbg" name="pbg" value="" dir="ltr" placeholder="BLANK — ENTER ONLY WHEN ASSIGNED">
+              <small id="pbgHelp">لا يوجد PBG افتراضي. اكتبه فقط بعد التعيين الرسمي.</small>
+            </label>
+            <label>
+              <span>Movement / Clearance Request</span>
+              <input id="movementRequest" name="movementRequest" value="" dir="ltr" placeholder="ENTER / MOVE / ANCHOR — VERIFY">
+            </label>
+            <label>
+              <span>Pilot Booking Reference</span>
+              <input id="pilotBooking" name="pilotBooking" value="" dir="ltr" placeholder="VERIFY WITH AGENT / PSA">
+            </label>
+            <label>
+              <span>Booked Pilot Time (SGT)</span>
+              <input id="pilotTime" name="pilotTime" value="" dir="ltr" placeholder="DD HHMM SGT — VERIFY">
+            </label>
+            <label>
+              <span>Dangerous Cargo</span>
+              <input id="dangerousCargo" name="dangerousCargo" value="" dir="ltr" placeholder="VERIFY YES/NO + CLASS">
+            </label>
+            <label>
+              <span>Defects / Limitations</span>
+              <input id="defects" name="defects" value="" dir="ltr" placeholder="VERIFY NIL / DETAILS">
+            </label>
+            <label>
+              <span>Pollution / DG Lost</span>
+              <input id="pollution" name="pollution" value="" dir="ltr" placeholder="VERIFY NIL / DETAILS">
+            </label>
+          </div>
+          <div class="form-actions">
+            <button class="btn btn-primary" type="submit">حفظ وتحديث نص النداء</button>
+            <p>راجع القيم مع Master / ECDIS قبل الإرسال. لا تعتمد على بيانات محفوظة من رحلة سابقة.</p>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel scripts-panel" id="scripts">
+        <div class="panel-heading">
+          <div>
+            <p class="section-kicker">READY-TO-READ ENGLISH</p>
+            <h2>نص النداء المجهز للنقطة الحالية</h2>
+          </div>
+          <button class="btn btn-secondary btn-small" id="copyScriptButton" type="button">COPY SCRIPT</button>
+        </div>
+
+        <div class="script-current-meta">
+          <span id="scriptStation">KLANG VTS</span>
+          <strong id="scriptChannel">CH 66</strong>
+        </div>
+        <pre class="vhf-script" id="currentScript" dir="ltr"></pre>
+        <p class="script-rule" id="scriptRule">اقرأ التقرير الكامل عند دخول STRAITREP، ثم جاوب أي بيانات إضافية يطلبها الـVTS.</p>
+
+        <details class="script-details">
+          <summary>عرض النصوص الأربع + قوالب Port / Pilot</summary>
+          <div class="all-scripts" id="allScripts"></div>
+        </details>
+      </section>
+
+      <section class="final-warnings" aria-label="تحذيرات التشغيل">
+        <article>
+          <strong>ECDIS + VTS أولًا</strong>
+          <p>الموقع والمسافة داخل التطبيق للتنبيه المساعد فقط. أي اختلاف: اتبع الـECDIS المصحح وتعليمات VTS.</p>
+        </article>
+        <article>
+          <strong>S1–S6 يدوي</strong>
+          <p>لا تغيّر القناة آليًا داخل القطاعات الماليزية. انتظر الـhandover أو استخدم حدود الـENC الرسمية.</p>
+        </article>
+        <article class="warning-red">
+          <strong>PBG فارغ عمدًا</strong>
+          <p>لا تتجه إلى أي Pilot Boarding Ground قبل استلام التعيين الرسمي من الوكيل/PSA Marine/Port Master.</p>
+        </article>
+      </section>
+    </main>
+
+    <footer>
+      <span>VORTEX BULK · IMO 9189926 · COMPUTER HTML MODE</span>
+      <strong>Prepared by Second Officer Sayed Abdel Hakim.</strong>
+    </footer>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script>
+(function () {
+  "use strict";
+
+  // Keep the real Android bridge when this page is opened inside the APK.
+  if (window.AndroidVhf) return;
+
+  const RUNTIME_KEY = "vortex.bulk.vhf.browserRuntime.v1";
+  const BRIDGE_DATA_KEY = "vortex.bulk.vhf.reportData.v1";
+  const REQUIRED_GOOD_FIXES = 3;
+  const MAX_ACCURACY_M = 75;
+  const MAX_FIX_AGE_MS = 5000;
+  const MAX_SPEED_KN = 30;
+  const ROUTE_CORRIDOR_NM = 0.75;
+  const GPS_WARNING_MS = 10000;
+  const GPS_STALE_MS = 30000;
+  const ALARM_SNOOZE_MS = 60000;
+  const EARTH_RADIUS_NM = 3440.065;
+  const DEG = Math.PI / 180;
+
+  const EVENTS = Object.freeze([
+    Object.freeze({
+      id: "western-entry",
+      title: "STRAITREP WESTERN ENTRY",
+      station: "KLANG VTS",
+      channel: "66",
+      action: "FULL STRAITREP REPORT",
+      note: "CROSS 100\u00b040.000\u2032E ON WP8\u2192WP9",
+      mode: "MERIDIAN",
+      cueLat: 2.9685667,
+      cueLon: 100.6666667,
+      gateALat: 0,
+      gateALon: 0,
+      gateBLat: 0,
+      gateBLon: 0,
+      routeStartLat: 3.4663167,
+      routeStartLon: 99.9990833,
+      routeEndLat: 2.9234333,
+      routeEndLon: 100.7272,
+      targetSector: 1
+    }),
+    Object.freeze({
+      id: "coa-iyu",
+      title: "PULAU IYU KECHIL ABEAM",
+      station: "VTIS WEST",
+      channel: "73",
+      action: "CONFIRMATION OF ARRIVAL \u2014 KEEP CH88 WATCH",
+      note: "SEPARATE CH73 CALL WHILE PHYSICALLY IN S6",
+      mode: "LANDMARK_ABEAM",
+      cueLat: 1.2134167,
+      cueLon: 103.3658667,
+      gateALat: 0,
+      gateALon: 0,
+      gateBLat: 0,
+      gateBLon: 0,
+      routeStartLat: 1.2211667,
+      routeStartLon: 103.3532,
+      routeEndLat: 1.0393833,
+      routeEndLon: 103.65025,
+      targetSector: 0
+    }),
+    Object.freeze({
+      id: "s6-s7",
+      title: "SECTOR 6 \u2192 SECTOR 7",
+      station: "VTIS WEST",
+      channel: "73",
+      action: "CH88 \u2192 CH73 ONLY ON VTS HANDOVER",
+      note: "OFFICIAL TG PIAI\u2013PULAU KARIMUN KECIL LINE",
+      mode: "SEGMENT",
+      cueLat: 1.1753,
+      cueLon: 103.42815,
+      gateALat: 1.2583333,
+      gateALon: 103.5125,
+      gateBLat: 1.1533333,
+      gateBLon: 103.4058333,
+      routeStartLat: 1.2211667,
+      routeStartLon: 103.3532,
+      routeEndLat: 1.0393833,
+      routeEndLon: 103.65025,
+      targetSector: 7
+    }),
+    Object.freeze({
+      id: "s7-s8",
+      title: "SECTOR 7 \u2192 SECTOR 8",
+      station: "VTIS CENTRAL",
+      channel: "14",
+      action: "CH73 \u2192 CH14 ONLY ON VTIS HANDOVER",
+      note: "OFFICIAL LONGITUDE 103\u00b044.5\u2032E",
+      mode: "MERIDIAN",
+      cueLat: 1.1062333,
+      cueLon: 103.7416667,
+      gateALat: 0,
+      gateALon: 0,
+      gateBLat: 0,
+      gateBLon: 0,
+      routeStartLat: 1.0807833,
+      routeStartLon: 103.7181833,
+      routeEndLat: 1.1340667,
+      routeEndLon: 103.76735,
+      targetSector: 8
+    })
+  ]);
+
+  function readRuntimeIndex() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(RUNTIME_KEY) || "{}");
+      const index = Number(saved.eventIndex);
+      return Number.isFinite(index) ? Math.max(0, Math.min(EVENTS.length, Math.trunc(index))) : 0;
+    } catch (_) {
+      return 0;
+    }
+  }
+
+  const state = {
+    serviceRunning: false,
+    monitoringRequested: false,
+    armed: false,
+    goodFixCount: 0,
+    gpsStatus: "DISARMED",
+    stage: "DISARMED",
+    statusMessage: "نسخة الكمبيوتر جاهزة \u2014 اختبر الصوت ثم شغ\u0651ل GPS.",
+    eventIndex: readRuntimeIndex(),
+    position: null,
+    evaluation: null,
+    lastAcceptedGood: null,
+    lastGoodAt: 0,
+    monitoringStartedAt: 0,
+    locationPermission: null,
+    notificationPermission: typeof Notification === "undefined" ? null : Notification.permission !== "denied",
+    soundTestConfirmed: false,
+    soundTestStartedAt: 0,
+    testOnly: false,
+    alarmActive: false,
+    alarmKind: "",
+    alarmAcknowledged: false,
+    alarmSilencedUntil: 0,
+    currentAlarmKey: "",
+    acknowledgedAlarmKeys: new Set(),
+    seenApproachSide: false,
+    postCrossingFixes: 0
+  };
+
+  let watchId = null;
+  let watchdogTimer = null;
+  let audioContext = null;
+  let alarmLoopTimer = null;
+  let soundStopTimer = null;
+  let soundTestExpiryTimer = null;
+  let wakeLock = null;
+  let activeNotification = null;
+
+  function persistRuntime() {
+    try {
+      localStorage.setItem(RUNTIME_KEY, JSON.stringify({ eventIndex: state.eventIndex }));
+    } catch (_) { }
+  }
+
+  function clamp(value, min, max) {
+    return Math.max(min, Math.min(max, value));
+  }
+
+  function finite(value) {
+    return Number.isFinite(value) ? value : null;
+  }
+
+  function currentEvent() {
+    return state.eventIndex < EVENTS.length ? EVENTS[state.eventIndex] : null;
+  }
+
+  function resetCrossingState() {
+    state.seenApproachSide = false;
+    state.postCrossingFixes = 0;
+  }
+
+  function haversineNm(lat1, lon1, lat2, lon2) {
+    const dLat = (lat2 - lat1) * DEG;
+    const dLon = (lon2 - lon1) * DEG;
+    const a = Math.sin(dLat / 2) ** 2
+      + Math.cos(lat1 * DEG) * Math.cos(lat2 * DEG) * Math.sin(dLon / 2) ** 2;
+    return EARTH_RADIUS_NM * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(Math.max(0, 1 - a)));
+  }
+
+  function meridianDistanceNm(lat, lon, gateLon) {
+    return Math.abs(lon - gateLon) * 60 * Math.cos(lat * DEG);
+  }
+
+  function pointToSegmentNm(lat, lon, aLat, aLon, bLat, bLon) {
+    const refLat = ((lat + aLat + bLat) / 3) * DEG;
+    const px = lon * 60 * Math.cos(refLat);
+    const py = lat * 60;
+    const ax = aLon * 60 * Math.cos(refLat);
+    const ay = aLat * 60;
+    const bx = bLon * 60 * Math.cos(refLat);
+    const by = bLat * 60;
+    const dx = bx - ax;
+    const dy = by - ay;
+    const length2 = dx * dx + dy * dy;
+    const t = length2 === 0 ? 0 : clamp(((px - ax) * dx + (py - ay) * dy) / length2, 0, 1);
+    return Math.hypot(px - (ax + t * dx), py - (ay + t * dy));
+  }
+
+  function signedLineDistanceNm(lat, lon, aLat, aLon, bLat, bLon) {
+    const refLat = ((lat + aLat + bLat) / 3) * DEG;
+    const px = (lon - aLon) * 60 * Math.cos(refLat);
+    const py = (lat - aLat) * 60;
+    const dx = (bLon - aLon) * 60 * Math.cos(refLat);
+    const dy = (bLat - aLat) * 60;
+    const length = Math.hypot(dx, dy);
+    return length === 0 ? 0 : (dx * py - dy * px) / length;
+  }
+
+  function signedAlongTrackNm(lat, lon, event) {
+    const refLat = event.cueLat * DEG;
+    const dx = (event.routeEndLon - event.routeStartLon) * 60 * Math.cos(refLat);
+    const dy = (event.routeEndLat - event.routeStartLat) * 60;
+    const length = Math.hypot(dx, dy);
+    if (length === 0) return 0;
+    const px = (lon - event.cueLon) * 60 * Math.cos(refLat);
+    const py = (lat - event.cueLat) * 60;
+    return (px * dx + py * dy) / length;
+  }
+
+  function distanceToGate(sample, event) {
+    if (event.mode === "MERIDIAN") return meridianDistanceNm(sample.lat, sample.lon, event.cueLon);
+    if (event.mode === "SEGMENT") {
+      return pointToSegmentNm(sample.lat, sample.lon,
+        event.gateALat, event.gateALon, event.gateBLat, event.gateBLon);
+    }
+    return Math.abs(signedAlongTrackNm(sample.lat, sample.lon, event));
+  }
+
+  function signedSide(sample, event) {
+    if (event.mode === "MERIDIAN") {
+      return (sample.lon - event.cueLon) * 60 * Math.cos(sample.lat * DEG);
+    }
+    if (event.mode === "SEGMENT") {
+      return signedLineDistanceNm(sample.lat, sample.lon,
+        event.gateALat, event.gateALon, event.gateBLat, event.gateBLon);
+    }
+    return signedAlongTrackNm(sample.lat, sample.lon, event);
+  }
+
+  function sampleQualifies(sample) {
+    return !!sample
+      && sample.ageMs >= 0 && sample.ageMs <= MAX_FIX_AGE_MS
+      && sample.accuracyM > 0 && sample.accuracyM <= MAX_ACCURACY_M
+      && sample.speedKn >= 0 && sample.speedKn <= MAX_SPEED_KN
+      && Number.isFinite(sample.lat) && sample.lat >= -90 && sample.lat <= 90
+      && Number.isFinite(sample.lon) && sample.lon >= -180 && sample.lon <= 180;
+  }
+
+  function evaluateGate(sample) {
+    const event = currentEvent();
+    if (!event) {
+      return { stage: "MONITOR", distanceNm: null, xteNm: null, crossed: false, message: "ROUTE EVENTS COMPLETE" };
+    }
+
+    const distanceNm = distanceToGate(sample, event);
+    const xteNm = pointToSegmentNm(sample.lat, sample.lon,
+      event.routeStartLat, event.routeStartLon, event.routeEndLat, event.routeEndLon);
+
+    if (!sampleQualifies(sample)) {
+      state.postCrossingFixes = 0;
+      return { stage: "GPS_DEGRADED", distanceNm, xteNm, crossed: false, message: "GPS DEGRADED \u2014 CHECK ECDIS" };
+    }
+
+    if (distanceNm <= 5 && xteNm > ROUTE_CORRIDOR_NM) {
+      resetCrossingState();
+      return { stage: "ROUTE_MISMATCH", distanceNm, xteNm, crossed: false, message: "OFF ROUTE CORRIDOR \u2014 AUTOMATIC CUE FROZEN" };
+    }
+
+    const side = signedSide(sample, event);
+    const hysteresis = Math.max(0.10, (2 * sample.accuracyM) / 1852);
+    if (side < -hysteresis) {
+      state.seenApproachSide = true;
+      state.postCrossingFixes = 0;
+    } else if (side > hysteresis) {
+      if (!state.seenApproachSide) {
+        return { stage: "AHEAD_CONFIRM", distanceNm, xteNm, crossed: false, message: "POSITION AHEAD \u2014 CONFIRM CURRENT STAGE WITH ECDIS/VTS" };
+      }
+      state.postCrossingFixes += 1;
+    } else {
+      state.postCrossingFixes = 0;
+    }
+
+    if (state.seenApproachSide && state.postCrossingFixes >= 3) {
+      return { stage: "CROSSED_WAITING_ACK", distanceNm, xteNm, crossed: true, message: "GATE CROSSED \u2014 REPORT/HANDOVER CONFIRMATION REQUIRED" };
+    }
+    if (distanceNm <= 0.5) return { stage: "ACTION_DUE", distanceNm, xteNm, crossed: false, message: "AT GATE \u2014 VERIFY ACTION" };
+    if (distanceNm <= 2) return { stage: "STANDBY", distanceNm, xteNm, crossed: false, message: "STANDBY \u2014 2 NM" };
+    if (distanceNm <= 5) return { stage: "PREPARE", distanceNm, xteNm, crossed: false, message: "PREPARE \u2014 5 NM" };
+    return { stage: "MONITOR", distanceNm, xteNm, crossed: false, message: "MONITOR" };
+  }
+
+  function isRepeatableAlarm(key) {
+    return key.startsWith("SYSTEM:")
+      || key.endsWith(":ACTION_DUE")
+      || key.endsWith(":CROSSED_WAITING_ACK")
+      || key.endsWith(":AHEAD_CONFIRM");
+  }
+
+  function clearSound() {
+    if (alarmLoopTimer) window.clearInterval(alarmLoopTimer);
+    if (soundStopTimer) window.clearTimeout(soundStopTimer);
+    alarmLoopTimer = null;
+    soundStopTimer = null;
+    if (navigator.vibrate) {
+      try { navigator.vibrate(0); } catch (_) { }
+    }
+  }
+
+  function ensureAudioContext() {
+    const AudioCtor = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtor) return null;
+    if (!audioContext) audioContext = new AudioCtor();
+    if (audioContext.state === "suspended") audioContext.resume().catch(function () { });
+    return audioContext;
+  }
+
+  function playBeepPattern(testOnly) {
+    clearSound();
+    const context = ensureAudioContext();
+    const pulse = function () {
+      if (context) {
+        const start = context.currentTime + 0.02;
+        [0, 0.45, 0.9].forEach(function (offset, index) {
+          const oscillator = context.createOscillator();
+          const gain = context.createGain();
+          oscillator.type = index === 1 ? "square" : "sine";
+          oscillator.frequency.value = testOnly ? 880 : (index === 1 ? 1040 : 740);
+          gain.gain.setValueAtTime(0.0001, start + offset);
+          gain.gain.exponentialRampToValueAtTime(0.42, start + offset + 0.02);
+          gain.gain.exponentialRampToValueAtTime(0.0001, start + offset + 0.32);
+          oscillator.connect(gain);
+          gain.connect(context.destination);
+          oscillator.start(start + offset);
+          oscillator.stop(start + offset + 0.36);
+        });
+      }
+      if (navigator.vibrate) {
+        try { navigator.vibrate(testOnly ? [350, 150, 350, 150, 700] : [500, 180, 500, 180, 1000]); } catch (_) { }
+      }
+    };
+    pulse();
+    if (!testOnly) alarmLoopTimer = window.setInterval(pulse, 5500);
+    if (testOnly) soundStopTimer = window.setTimeout(clearSound, 5000);
+  }
+
+  function showSystemNotification(title, body) {
+    if (typeof Notification === "undefined" || Notification.permission !== "granted") return;
+    try {
+      if (activeNotification) activeNotification.close();
+      activeNotification = new Notification(title, {
+        body,
+        requireInteraction: true,
+        tag: "vortex-vhf-alarm",
+        renotify: true
+      });
+      activeNotification.onclick = function () {
+        window.focus();
+        activeNotification.close();
+      };
+    } catch (_) { }
+  }
+
+  function startAlarm(key, title, detail) {
+    if (state.acknowledgedAlarmKeys.has(key)) return;
+    if (key === state.currentAlarmKey) {
+      if (state.alarmActive) return;
+      if (state.alarmAcknowledged && Date.now() < state.alarmSilencedUntil) return;
+    }
+    clearSound();
+    state.currentAlarmKey = key;
+    state.alarmKind = key.startsWith("EVENT:")
+      ? key.substring(key.lastIndexOf(":") + 1)
+      : key.substring(key.indexOf(":") + 1);
+    state.alarmActive = true;
+    state.alarmAcknowledged = false;
+    state.alarmSilencedUntil = 0;
+    playBeepPattern(false);
+    showSystemNotification(title, detail);
+  }
+
+  function handleEvaluation(evaluation) {
+    state.evaluation = evaluation;
+    state.stage = evaluation.stage;
+    state.statusMessage = evaluation.message;
+    const event = currentEvent();
+    if (!event) return;
+    if (["PREPARE", "STANDBY", "ACTION_DUE", "CROSSED_WAITING_ACK", "AHEAD_CONFIRM"].includes(evaluation.stage)) {
+      const key = "EVENT:" + event.id + ":" + evaluation.stage;
+      startAlarm(key, event.station + " \u2014 CH " + event.channel, event.action + "\n" + evaluation.message);
+    } else if (evaluation.stage === "ROUTE_MISMATCH") {
+      startAlarm("SYSTEM:ROUTE_MISMATCH", "ROUTE MISMATCH", evaluation.message);
+    }
+  }
+
+  function plausibleProgression(sample) {
+    const previous = state.lastAcceptedGood;
+    if (!previous) return true;
+    const elapsedHours = (sample.timeMs - previous.timeMs) / 3600000;
+    if (elapsedHours <= 0) return false;
+    const traveled = haversineNm(previous.lat, previous.lon, sample.lat, sample.lon);
+    const allowance = (previous.accuracyM + sample.accuracyM) / 1852;
+    return traveled <= MAX_SPEED_KN * elapsedHours + allowance;
+  }
+
+  function onPosition(position) {
+    if (!position || !position.coords) return;
+    const timestamp = Number(position.timestamp) || Date.now();
+    const speedMps = Number(position.coords.speed);
+    const sample = {
+      lat: Number(position.coords.latitude),
+      lon: Number(position.coords.longitude),
+      accuracyM: Number(position.coords.accuracy),
+      speedKn: Number.isFinite(speedMps) && speedMps >= 0 ? speedMps * 1.9438445 : 0,
+      ageMs: Math.max(0, Date.now() - timestamp),
+      timeMs: timestamp
+    };
+
+    state.locationPermission = true;
+    state.position = sample;
+    const good = sampleQualifies(sample) && plausibleProgression(sample);
+    if (good) {
+      state.lastAcceptedGood = { ...sample };
+      state.lastGoodAt = Date.now();
+      state.goodFixCount = Math.min(REQUIRED_GOOD_FIXES, state.goodFixCount + 1);
+      state.gpsStatus = state.goodFixCount < REQUIRED_GOOD_FIXES ? "ACQUIRING" : "GOOD";
+    } else {
+      state.goodFixCount = 0;
+      state.gpsStatus = "DEGRADED";
+      state.postCrossingFixes = 0;
+    }
+
+    if (state.monitoringRequested && !state.armed) {
+      if (state.goodFixCount >= REQUIRED_GOOD_FIXES) {
+        state.armed = true;
+        state.statusMessage = "ARMED \u2014 BROWSER GPS MONITORING ACTIVE";
+      } else {
+        state.statusMessage = "ACQUIRING " + state.goodFixCount + "/3 GOOD GPS FIXES";
+      }
+    }
+
+    if (state.monitoringRequested && state.armed) {
+      // A browser cannot prove GPS_PROVIDER/mock state. Never let a fix that
+      // failed the plausibility gate advance the crossing counter.
+      const gateSample = good ? sample : { ...sample, ageMs: MAX_FIX_AGE_MS + 1 };
+      handleEvaluation(evaluateGate(gateSample));
+    }
+    publish();
+  }
+
+  function locationErrorText(error) {
+    if (!error) return "LOCATION ERROR";
+    if (error.code === 1) return "LOCATION PERMISSION DENIED \u2014 ALLOW LOCATION IN EDGE/CHROME";
+    if (error.code === 2) return "POSITION UNAVAILABLE \u2014 THIS COMPUTER HAS NO USABLE LOCATION SOURCE";
+    if (error.code === 3) return "GPS TIMEOUT \u2014 CHECK WINDOWS LOCATION AND INTERNET";
+    return String(error.message || "LOCATION ERROR").toUpperCase();
+  }
+
+  function onPositionError(error) {
+    if (error && error.code === 1) state.locationPermission = false;
+    state.goodFixCount = 0;
+    state.armed = false;
+    state.gpsStatus = error && error.code === 1 ? "DENIED" : "UNAVAILABLE";
+    state.statusMessage = locationErrorText(error);
+    resetCrossingState();
+    publish();
+  }
+
+  function startWatch() {
+    if (!navigator.geolocation) {
+      onPositionError({ code: 2, message: "Geolocation API unavailable" });
+      return;
+    }
+    try {
+      watchId = navigator.geolocation.watchPosition(onPosition, onPositionError, {
+        enableHighAccuracy: true,
+        maximumAge: 0,
+        timeout: 15000
+      });
+    } catch (error) {
+      onPositionError({ code: 1, message: error && error.message });
+    }
+  }
+
+  function stopWatch() {
+    if (watchId != null && navigator.geolocation) {
+      try { navigator.geolocation.clearWatch(watchId); } catch (_) { }
+    }
+    watchId = null;
+  }
+
+  async function requestWakeLock() {
+    if (!navigator.wakeLock || document.visibilityState !== "visible" || !state.monitoringRequested) return;
+    try {
+      wakeLock = await navigator.wakeLock.request("screen");
+      wakeLock.addEventListener("release", function () { wakeLock = null; });
+    } catch (_) { }
+  }
+
+  async function requestNotificationPermission() {
+    if (typeof Notification === "undefined") return;
+    try {
+      const permission = Notification.permission === "default"
+        ? await Notification.requestPermission()
+        : Notification.permission;
+      state.notificationPermission = permission !== "denied";
+      publish();
+    } catch (_) { }
+  }
+
+  function watchdogTick() {
+    if (!state.monitoringRequested) return;
+    const now = Date.now();
+    const goodAge = state.lastGoodAt ? now - state.lastGoodAt : now - state.monitoringStartedAt;
+    if (goodAge > GPS_STALE_MS) {
+      state.armed = false;
+      state.goodFixCount = 0;
+      state.gpsStatus = "STALE";
+      state.stage = "GPS_DEGRADED";
+      state.statusMessage = "NO USABLE GPS FIX FOR 30 SECONDS \u2014 CHECK ECDIS";
+      resetCrossingState();
+      startAlarm("SYSTEM:GPS_STALE", "GPS LOST / STALE", state.statusMessage);
+    } else if (goodAge > GPS_WARNING_MS && state.armed) {
+      state.gpsStatus = "DEGRADED";
+      state.stage = "GPS_DEGRADED";
+      state.statusMessage = "GPS DEGRADED \u2014 AUTOMATIC GATE CUES FROZEN";
+    }
+    publish();
+  }
+
+  function canArm() {
+    return !!navigator.geolocation && state.locationPermission !== false && state.soundTestConfirmed && !state.testOnly;
+  }
+
+  function eventJson(event) {
+    if (!event) return null;
+    return {
+      id: event.id,
+      title: event.title,
+      station: event.station,
+      channel: event.channel,
+      action: event.action,
+      note: event.note,
+      mode: event.mode,
+      targetSector: event.targetSector
+    };
+  }
+
+  function formatDegMin(value, latitude) {
+    const hemisphere = latitude ? (value >= 0 ? "N" : "S") : (value >= 0 ? "E" : "W");
+    const absolute = Math.abs(value);
+    const degrees = Math.floor(absolute);
+    const minutes = ((absolute - degrees) * 60).toFixed(3).padStart(6, "0");
+    return String(degrees).padStart(latitude ? 2 : 3, "0") + "\u00b0" + minutes + "\u2032" + hemisphere;
+  }
+
+  function snapshotObject() {
+    const now = Date.now();
+    const position = state.position ? {
+      available: true,
+      latitude: state.position.lat,
+      longitude: state.position.lon,
+      latText: formatDegMin(state.position.lat, true),
+      lonText: formatDegMin(state.position.lon, false),
+      accuracyM: finite(state.position.accuracyM),
+      speedKn: finite(state.position.speedKn),
+      ageMs: Math.max(0, now - state.position.timeMs),
+      mock: false,
+      timeMs: state.position.timeMs
+    } : { available: false };
+
+    return {
+      serviceRunning: state.serviceRunning,
+      armed: state.armed,
+      armRequested: state.monitoringRequested,
+      canArm: canArm(),
+      goodFixCount: state.goodFixCount,
+      gpsStatus: state.gpsStatus,
+      stage: state.stage,
+      statusMessage: state.statusMessage,
+      alarmActive: state.alarmActive,
+      alarmKind: state.alarmKind,
+      alarmAcknowledged: state.alarmAcknowledged,
+      alarmSilencedUntilElapsedMs: state.alarmSilencedUntil,
+      eventIndex: state.eventIndex,
+      eventCount: EVENTS.length,
+      routeComplete: !currentEvent(),
+      updatedAtMs: now,
+      permissions: {
+        fineLocation: state.locationPermission,
+        notifications: state.notificationPermission
+      },
+      position,
+      evaluation: state.evaluation ? {
+        distanceNm: finite(state.evaluation.distanceNm),
+        xteNm: finite(state.evaluation.xteNm),
+        crossed: !!state.evaluation.crossed
+      } : { distanceNm: null, xteNm: null, crossed: false },
+      event: eventJson(currentEvent()),
+      safety: {
+        gpsEnabled: !!navigator.geolocation,
+        alarmVolume: 100,
+        alarmVolumeMax: 100,
+        alarmVolumeUsable: true,
+        dndAllowsAlarm: true,
+        soundTestConfirmed: state.soundTestConfirmed,
+        notificationChannels: state.notificationPermission !== false
+      }
+    };
+  }
+
+  function publish() {
+    if (typeof window.onNativeSnapshot !== "function") return;
+    const snapshot = snapshotObject();
+    window.setTimeout(function () {
+      try { window.onNativeSnapshot(snapshot); } catch (_) { }
+    }, 0);
+  }
+
+  function arm() {
+    if (!state.soundTestConfirmed) {
+      state.statusMessage = "ARMING BLOCKED \u2014 RUN AND CONFIRM SOUND TEST";
+      publish();
+      return;
+    }
+    if (!navigator.geolocation) {
+      state.gpsStatus = "UNAVAILABLE";
+      state.statusMessage = "THIS BROWSER/COMPUTER HAS NO GEOLOCATION SOURCE";
+      publish();
+      return;
+    }
+    if (!window.isSecureContext && location.protocol !== "file:") {
+      state.gpsStatus = "DENIED";
+      state.statusMessage = "LOCATION REQUIRES HTTPS OR A TRUSTED LOCAL FILE";
+      publish();
+      return;
+    }
+    if (state.monitoringRequested) return;
+
+    ensureAudioContext();
+    state.monitoringRequested = true;
+    state.serviceRunning = true;
+    state.armed = false;
+    state.goodFixCount = 0;
+    state.lastAcceptedGood = null;
+    state.lastGoodAt = 0;
+    state.monitoringStartedAt = Date.now();
+    state.gpsStatus = "ACQUIRING";
+    state.stage = "ACQUIRING";
+    state.statusMessage = "ACQUIRING 0/3 GOOD GPS FIXES \u2014 ALLOW LOCATION IN THE BROWSER";
+    state.alarmActive = false;
+    state.alarmKind = "";
+    state.alarmAcknowledged = false;
+    state.currentAlarmKey = "";
+    state.acknowledgedAlarmKeys.clear();
+    resetCrossingState();
+    startWatch();
+    requestWakeLock();
+    requestNotificationPermission();
+    if (!watchdogTimer) watchdogTimer = window.setInterval(watchdogTick, 1000);
+    publish();
+  }
+
+  function disarm() {
+    stopWatch();
+    if (watchdogTimer) window.clearInterval(watchdogTimer);
+    watchdogTimer = null;
+    clearSound();
+    if (activeNotification) activeNotification.close();
+    activeNotification = null;
+    if (wakeLock) wakeLock.release().catch(function () { });
+    wakeLock = null;
+    state.serviceRunning = false;
+    state.monitoringRequested = false;
+    state.armed = false;
+    state.goodFixCount = 0;
+    state.gpsStatus = "DISARMED";
+    state.stage = "DISARMED";
+    state.statusMessage = "DISARMED \u2014 COMPUTER BROWSER MODE";
+    state.soundTestConfirmed = false;
+    state.position = null;
+    state.evaluation = null;
+    state.alarmActive = false;
+    state.alarmKind = "";
+    state.alarmAcknowledged = false;
+    state.currentAlarmKey = "";
+    state.acknowledgedAlarmKeys.clear();
+    resetCrossingState();
+    publish();
+  }
+
+  function silenceAlarm() {
+    if (!state.currentAlarmKey) return;
+    state.alarmAcknowledged = true;
+    state.alarmActive = false;
+    state.alarmSilencedUntil = Date.now() + ALARM_SNOOZE_MS;
+    if (!isRepeatableAlarm(state.currentAlarmKey)) state.acknowledgedAlarmKeys.add(state.currentAlarmKey);
+    clearSound();
+    if (activeNotification) activeNotification.close();
+    activeNotification = null;
+    state.statusMessage = state.alarmKind + " ACKNOWLEDGED \u2014 EVENT NOT COMPLETED";
+    publish();
+  }
+
+  function completeCurrentEvent() {
+    if (!state.monitoringRequested || !currentEvent()) return;
+    clearSound();
+    state.eventIndex = Math.min(EVENTS.length, state.eventIndex + 1);
+    persistRuntime();
+    state.acknowledgedAlarmKeys.clear();
+    state.currentAlarmKey = "";
+    state.alarmKind = "";
+    state.alarmActive = false;
+    state.alarmAcknowledged = false;
+    state.alarmSilencedUntil = 0;
+    state.evaluation = null;
+    resetCrossingState();
+    state.statusMessage = currentEvent()
+      ? "EVENT COMPLETED BY OFFICER \u2014 MONITORING NEXT EVENT"
+      : "ROUTE EVENTS COMPLETE \u2014 CONTINUE ECDIS/VTS WATCH";
+    if (state.armed && state.position) handleEvaluation(evaluateGate(state.position));
+    publish();
+  }
+
+  function testAlarm() {
+    if (state.monitoringRequested) {
+      state.statusMessage = "DISARM BEFORE RUNNING THE SOUND TEST";
+      publish();
+      return;
+    }
+    ensureAudioContext();
+    state.serviceRunning = true;
+    state.testOnly = true;
+    state.soundTestConfirmed = false;
+    state.soundTestStartedAt = Date.now();
+    state.currentAlarmKey = "TEST";
+    state.alarmKind = "TEST";
+    state.alarmActive = true;
+    state.alarmAcknowledged = false;
+    state.statusMessage = "ALARM TEST \u2014 CONFIRM THAT YOU HEARD THE SOUND (VIBRATION IF SUPPORTED)";
+    playBeepPattern(true);
+    requestNotificationPermission();
+    showSystemNotification("VHF ALARM TEST", "Confirm sound, then return to the page and press confirmation.");
+    if (soundTestExpiryTimer) window.clearTimeout(soundTestExpiryTimer);
+    soundTestExpiryTimer = window.setTimeout(function () {
+      if (!state.testOnly) return;
+      clearSound();
+      state.testOnly = false;
+      state.serviceRunning = false;
+      state.currentAlarmKey = "";
+      state.alarmKind = "";
+      state.alarmActive = false;
+      state.statusMessage = "SOUND TEST EXPIRED \u2014 RUN IT AGAIN";
+      publish();
+    }, 120000);
+    publish();
+  }
+
+  function confirmSoundTest() {
+    const recent = state.soundTestStartedAt > 0 && Date.now() - state.soundTestStartedAt <= 120000;
+    if (!state.testOnly || !recent) {
+      state.statusMessage = "SOUND TEST CONFIRMATION BLOCKED \u2014 TEST AGAIN";
+      publish();
+      return;
+    }
+    if (soundTestExpiryTimer) window.clearTimeout(soundTestExpiryTimer);
+    soundTestExpiryTimer = null;
+    clearSound();
+    if (activeNotification) activeNotification.close();
+    activeNotification = null;
+    state.soundTestConfirmed = true;
+    state.testOnly = false;
+    state.serviceRunning = false;
+    state.currentAlarmKey = "";
+    state.alarmKind = "";
+    state.alarmActive = false;
+    state.alarmAcknowledged = false;
+    state.statusMessage = "SOUND AND VIBRATION CONFIRMED BY OFFICER";
+    publish();
+  }
+
+  function setCurrentEvent(index) {
+    if (state.monitoringRequested || state.testOnly) {
+      state.statusMessage = "DISARM BEFORE CHANGING THE CURRENT ROUTE EVENT";
+      publish();
+      return;
+    }
+    state.eventIndex = clamp(Math.trunc(Number(index) || 0), 0, EVENTS.length - 1);
+    persistRuntime();
+    state.evaluation = null;
+    state.acknowledgedAlarmKeys.clear();
+    state.currentAlarmKey = "";
+    state.alarmKind = "";
+    state.alarmActive = false;
+    resetCrossingState();
+    state.statusMessage = "CURRENT EVENT CONFIRMED MANUALLY \u2014 VERIFY ECDIS/VTS";
+    publish();
+  }
+
+  function requestPermissions() {
+    requestNotificationPermission();
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function (position) {
+        state.locationPermission = true;
+        onPosition(position);
+      }, onPositionError, { enableHighAccuracy: true, maximumAge: 0, timeout: 15000 });
+    }
+  }
+
+  function initPermissionStatus() {
+    if (!navigator.permissions || typeof navigator.permissions.query !== "function") return;
+    navigator.permissions.query({ name: "geolocation" }).then(function (result) {
+      state.locationPermission = result.state === "granted" ? true : result.state === "denied" ? false : null;
+      result.onchange = function () {
+        state.locationPermission = result.state === "granted" ? true : result.state === "denied" ? false : null;
+        publish();
+      };
+      publish();
+    }).catch(function () { });
+  }
+
+  const bridge = {
+    getSnapshot: function () { return JSON.stringify(snapshotObject()); },
+    arm,
+    startMonitoring: arm,
+    disarm,
+    stopMonitoring: disarm,
+    silenceAlarm,
+    acknowledgeAlarm: silenceAlarm,
+    completeCurrentEvent,
+    completeEvent: completeCurrentEvent,
+    testAlarm,
+    soundTest: testAlarm,
+    confirmSoundTest,
+    setCurrentEvent,
+    requestPermissions,
+    openLocationSettings: function () {
+      window.alert("افتح Windows Settings > Privacy & security > Location، واسمح لـ Edge/Chrome باستخدام الموقع.");
+    },
+    openNotificationSettings: function () {
+      window.alert("اسمح بالإشعارات من علامة القفل بجوار عنوان الصفحة في Edge/Chrome.");
+    },
+    saveBridgeData: function (json) {
+      try {
+        const normalized = JSON.stringify(JSON.parse(String(json)));
+        localStorage.setItem(BRIDGE_DATA_KEY, normalized);
+        return true;
+      } catch (_) {
+        return false;
+      }
+    },
+    getBridgeData: function () {
+      try { return localStorage.getItem(BRIDGE_DATA_KEY) || "{}"; } catch (_) { return "{}"; }
+    }
+  };
+
+  Object.defineProperty(window, "AndroidVhf", {
+    value: bridge,
+    configurable: false,
+    enumerable: true,
+    writable: false
+  });
+
+  document.addEventListener("visibilitychange", function () {
+    if (document.visibilityState === "visible" && state.monitoringRequested) {
+      state.statusMessage = "PAGE ACTIVE AGAIN \u2014 VERIFY POSITION AND MISSED CUES WITH ECDIS/VTS";
+      requestWakeLock();
+      publish();
+    } else if (document.visibilityState !== "visible" && state.monitoringRequested) {
+      state.statusMessage = "BROWSER PAGE HIDDEN \u2014 GPS/ALARMS MAY PAUSE; KEEP THIS PAGE VISIBLE";
+      publish();
+    }
+  });
+
+  window.addEventListener("beforeunload", function () {
+    clearSound();
+    stopWatch();
+  });
+
+  initPermissionStatus();
+})();
+
+</script>
+  <script>
+(function () {
+  "use strict";
+
+  const STORAGE_KEY = "vortex.bulk.vhf.reportData.v1";
+  const REQUIRED_GOOD_FIXES = 3;
+  // Must stay identical to the native arming gate; UI must never show a weaker safety threshold.
+  const MAX_ACCURACY_M = 75;
+  const MAX_FIX_AGE_S = 5;
+
+  const DEFAULT_REPORT_DATA = Object.freeze({
+    shipName: "VORTEX BULK",
+    callSign: "V4ND7",
+    imo: "9189926",
+    mmsi: "341662002",
+    draftFwd: "",
+    draftAft: "",
+    airDraft: "",
+    trueCourse: "",
+    lastPort: "",
+    nextPort: "",
+    eta: "",
+    heightChanged: "",
+    pbg: "",
+    movementRequest: "",
+    pilotBooking: "",
+    pilotTime: "",
+    dangerousCargo: "",
+    defects: "",
+    pollution: ""
+  });
+
+  const ROUTE_EVENTS = Object.freeze([
+    {
+      id: "straitrep-entry",
+      title: "STRAITREP ENTRY — 100°40′E",
+      station: "KLANG VTS",
+      channel: "CH 66",
+      action: "FULL STRAITREP REPORT",
+      coordinate: "02°58.114′N 100°40.000′E",
+      note: "الدخول الفعلي على WP8→WP9. لا تنتظر الوصول إلى WP9.",
+      rule: "اقرأ التقرير الكامل عند دخول STRAITREP، ثم جاوب أي بيانات إضافية يطلبها الـVTS."
+    },
+    {
+      id: "pulau-iyu-coa",
+      title: "PULAU IYU KECHIL LIGHT ABEAM",
+      station: "VTIS WEST",
+      channel: "CH 73",
+      action: "CONFIRMATION OF ARRIVAL",
+      coordinate: "01°12.805′N 103°21.952′E",
+      note: "اتصل CH73، لكن استمر في مراقبة Johor VTS على CH88 حتى تسليم S6→S7.",
+      rule: "ده Confirmation of Arrival منفصل عن تغيير السيكتور. لا تقفل CH88 قبل الـhandover."
+    },
+    {
+      id: "sector-6-7",
+      title: "SECTOR 6 → SECTOR 7",
+      station: "JOHOR VTS → VTIS WEST",
+      channel: "CH 88 → 73",
+      action: "VTS HANDOVER — SHORT CALL ONLY",
+      coordinate: "01°10.518′N 103°25.689′E",
+      note: "غيّر إلى CH73 بعد تسليم Johor VTS فقط. لا تكرر التقرير الكامل.",
+      rule: "النص المختصر يُستخدم بعد الـhandover أو عند طلب VTS. تعليمات VTS المباشرة لها الأولوية."
+    },
+    {
+      id: "sector-7-8",
+      title: "SECTOR 7 → SECTOR 8 — 103°44.5′E",
+      station: "VTIS CENTRAL",
+      channel: "CH 14",
+      action: "VTS HANDOVER — SHORT CALL ONLY",
+      coordinate: "01°06.374′N 103°44.500′E",
+      note: "انتقل من CH73 إلى CH14 عند التسليم. الروت الحالي ينتهي داخل Sector 8.",
+      rule: "لا تنتقل إلى CH10؛ WP23 قبل حد Sector 9. استخدم CH10 فقط إذا أمرك VTIS."
+    }
+  ]);
+
+  const STAGE_LABELS = Object.freeze({
+    IDLE: "STANDBY",
+    MONITOR: "MONITOR — MORE THAN 5 NM",
+    PREPARE: "PREPARE — 5 NM",
+    STANDBY: "STANDBY — 2 NM",
+    ACTION_DUE: "ACTION DUE — 0.5 NM",
+    CROSSED_WAITING_ACK: "GATE CROSSED — ACTION REQUIRED",
+    GPS_DEGRADED: "GPS DEGRADED — CHECK ECDIS",
+    ROUTE_MISMATCH: "OFF ROUTE — AUTOMATIC CUE FROZEN",
+    AHEAD_CONFIRM: "POSITION AHEAD — CONFIRM STAGE",
+    ARMED: "ARMED / MONITORING",
+    APPROACH: "APPROACHING",
+    APPROACH_5NM: "5 NM PRE-ALERT",
+    PRE_ALERT: "PRE-ALERT",
+    WARNING_2NM: "2 NM WARNING",
+    CALL_05NM: "0.5 NM — CALL",
+    CALL: "CALL NOW",
+    CROSSING: "CROSSING",
+    CROSSED: "CROSSED — VERIFY / CALL",
+    COMPLETE: "EVENT COMPLETE",
+    ROUTE_COMPLETE: "ROUTE COMPLETE"
+  });
+
+  const state = {
+    snapshot: null,
+    eventIndex: 0,
+    reportData: { ...DEFAULT_REPORT_DATA },
+    bridgeConnected: false,
+    soundTestStarted: false,
+    toastTimer: null,
+    lastSnapshotAt: 0
+  };
+
+  const el = {};
+
+  function byId(id) {
+    return document.getElementById(id);
+  }
+
+  function cacheElements() {
+    [
+      "armedState", "gpsState", "positionValue", "accuracyValue", "fixAgeValue",
+      "speedValue", "goodFixValue", "statusMessage", "qualityWarning", "startButton",
+      "stopButton", "testButton", "confirmSoundButton", "soundConfirmState", "alarmVolumeValue",
+      "eventCounter", "distanceValue", "eventTitle",
+      "stationValue", "channelValue", "eventAction", "eventNote", "alarmStage",
+      "ackButton", "completeButton", "alarmPanel", "alarmTitle", "alarmTarget",
+      "alarmAckButton", "routeProgressFill", "cueList", "reportForm", "saveState",
+      "scriptStation", "scriptChannel", "currentScript", "scriptRule", "allScripts",
+      "copyScriptButton", "toast"
+    ].forEach((id) => {
+      el[id] = byId(id);
+    });
+  }
+
+  function getBridge() {
+    return window.AndroidVhf || null;
+  }
+
+  function callBridge(methodNames, args, options) {
+    const names = Array.isArray(methodNames) ? methodNames : [methodNames];
+    const callArgs = Array.isArray(args) ? args : [];
+    const settings = options || {};
+    const bridge = getBridge();
+
+    if (!bridge) {
+      state.bridgeConnected = false;
+      if (!settings.silent) showToast("Native GPS bridge غير متصل.", true);
+      updateBridgeAvailability();
+      return { ok: false, result: null, method: null };
+    }
+
+    for (const name of names) {
+      if (typeof bridge[name] !== "function") continue;
+      try {
+        const result = bridge[name].apply(bridge, callArgs);
+        state.bridgeConnected = true;
+        updateBridgeAvailability();
+        return { ok: true, result, method: name };
+      } catch (error) {
+        if (!settings.silent) showToast("تعذر تنفيذ الأمر: " + name, true);
+        return { ok: false, result: null, method: name, error };
+      }
+    }
+
+    if (!settings.silent) showToast("إصدار Native bridge لا يدعم هذا الأمر.", true);
+    return { ok: false, result: null, method: null };
+  }
+
+  function parseJson(value) {
+    if (value == null) return null;
+    if (typeof value === "object") return value;
+    if (typeof value !== "string" || !value.trim()) return null;
+    try {
+      const parsed = JSON.parse(value);
+      return typeof parsed === "string" ? JSON.parse(parsed) : parsed;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  function numberOrNull(value) {
+    if (value === "" || value == null || typeof value === "boolean") return null;
+    const number = Number(value);
+    return Number.isFinite(number) ? number : null;
+  }
+
+  function boolValue(value, fallback) {
+    if (typeof value === "boolean") return value;
+    if (value === 1 || value === "1" || value === "true") return true;
+    if (value === 0 || value === "0" || value === "false") return false;
+    return fallback;
+  }
+
+  function firstDefined(values, fallback) {
+    for (const value of values) {
+      if (value !== undefined && value !== null && value !== "") return value;
+    }
+    return fallback;
+  }
+
+  function clampEventIndex(value) {
+    const numeric = numberOrNull(value);
+    if (numeric == null) return state.eventIndex;
+    return Math.max(0, Math.min(ROUTE_EVENTS.length - 1, Math.trunc(numeric)));
+  }
+
+  function normalizeSnapshot(rawInput) {
+    const raw = parseJson(rawInput) || rawInput;
+    if (!raw || typeof raw !== "object") return null;
+
+    const position = raw.position && typeof raw.position === "object" ? raw.position : {};
+    const evaluation = raw.evaluation && typeof raw.evaluation === "object" ? raw.evaluation : {};
+    const nativeEvent = raw.event && typeof raw.event === "object" ? raw.event : null;
+    const permissions = raw.permissions && typeof raw.permissions === "object" ? raw.permissions : {};
+    const safety = raw.safety && typeof raw.safety === "object" ? raw.safety : {};
+
+    const eventIndex = clampEventIndex(firstDefined([
+      raw.eventIndex,
+      raw.currentEventIndex,
+      raw.nextEventIndex
+    ], state.eventIndex));
+
+    let ageSeconds = numberOrNull(firstDefined([
+      position.ageSeconds,
+      position.ageSec,
+      raw.fixAgeSeconds,
+      raw.fixAgeSec
+    ], null));
+    if (ageSeconds == null) {
+      const ageMs = numberOrNull(firstDefined([position.ageMs, raw.fixAgeMs], null));
+      if (ageMs != null) ageSeconds = ageMs / 1000;
+    }
+
+    let speedKn = numberOrNull(firstDefined([
+      position.speedKn,
+      position.speedKts,
+      position.speedKnots,
+      raw.speedKn,
+      raw.speedKts,
+      raw.speedKnots,
+      raw.sog
+    ], null));
+    if (speedKn == null) {
+      const speedMps = numberOrNull(firstDefined([position.speedMps, raw.speedMps], null));
+      if (speedMps != null) speedKn = speedMps * 1.943844;
+    }
+
+    const latitude = numberOrNull(firstDefined([position.latitude, position.lat, raw.latitude, raw.lat], null));
+    const longitude = numberOrNull(firstDefined([position.longitude, position.lon, raw.longitude, raw.lon], null));
+    const positionAvailable = boolValue(firstDefined([
+      position.available,
+      raw.positionAvailable,
+      raw.hasLocation
+    ], null), latitude != null && longitude != null);
+
+    const alarmKind = String(firstDefined([raw.alarmKind, raw.alarmLevel, raw.alertKind], "NONE"));
+    const alarmActive = boolValue(firstDefined([raw.alarmActive, raw.isAlarm, raw.pendingAlarm], null), alarmKind !== "NONE" && alarmKind !== "IDLE");
+
+    return {
+      raw,
+      serviceRunning: boolValue(firstDefined([raw.serviceRunning, raw.monitoring, raw.isMonitoring], false), false),
+      armRequested: boolValue(firstDefined([
+        raw.armRequested,
+        raw.monitoringRequested,
+        raw.monitoring
+      ], false), false),
+      armed: boolValue(firstDefined([raw.armed, raw.isArmed], false), false),
+      canArm: boolValue(raw.canArm, true),
+      goodFixCount: Math.max(0, numberOrNull(firstDefined([raw.goodFixCount, raw.goodFixes], 0)) || 0),
+      gpsStatus: String(firstDefined([raw.gpsStatus, raw.locationStatus], "WAITING")),
+      stage: String(firstDefined([raw.stage, raw.alarmStage], "STANDBY")),
+      statusMessage: String(firstDefined([raw.statusMessage, raw.message], "")),
+      alarmActive,
+      alarmKind,
+      alarmAcknowledged: boolValue(firstDefined([raw.alarmAcknowledged, raw.acknowledged], false), false),
+      eventIndex,
+      eventCount: numberOrNull(raw.eventCount) || ROUTE_EVENTS.length,
+      routeComplete: boolValue(raw.routeComplete, false),
+      updatedAtMs: numberOrNull(raw.updatedAtMs),
+      permissionFineLocation: boolValue(firstDefined([permissions.fineLocation, raw.locationPermission], null), null),
+      permissionNotifications: boolValue(firstDefined([permissions.notifications, raw.notificationPermission], null), null),
+      safety: {
+        soundTestConfirmed: boolValue(firstDefined([
+          safety.soundTestConfirmed,
+          raw.soundTestConfirmed
+        ], false), false),
+        alarmVolume: firstDefined([
+          safety.alarmVolume,
+          safety.alarmVolumePercent,
+          raw.alarmVolume
+        ], null),
+        alarmVolumeMax: numberOrNull(firstDefined([
+          safety.alarmVolumeMax,
+          raw.alarmVolumeMax
+        ], null)),
+        alarmVolumeUsable: boolValue(safety.alarmVolumeUsable, null),
+        dndAllowsAlarm: boolValue(safety.dndAllowsAlarm, null),
+        gpsEnabled: boolValue(safety.gpsEnabled, null),
+        notificationChannels: boolValue(safety.notificationChannels, null)
+      },
+      position: {
+        available: positionAvailable,
+        latitude,
+        longitude,
+        latText: String(firstDefined([position.latText, raw.latText], "")),
+        lonText: String(firstDefined([position.lonText, raw.lonText], "")),
+        accuracyM: numberOrNull(firstDefined([position.accuracyM, position.accuracy, raw.accuracyM, raw.accuracy], null)),
+        speedKn,
+        ageSeconds,
+        mock: boolValue(firstDefined([position.mock, raw.mockLocation], false), false)
+      },
+      evaluation: {
+        distanceNm: numberOrNull(firstDefined([
+          evaluation.distanceNm,
+          raw.distanceNm,
+          raw.distanceToEventNm,
+          raw.nextDistanceNm,
+          nativeEvent && nativeEvent.distanceNm
+        ], null)),
+        xteNm: numberOrNull(firstDefined([evaluation.xteNm, raw.xteNm], null)),
+        crossed: boolValue(firstDefined([evaluation.crossed, raw.crossed], false), false)
+      },
+      event: nativeEvent
+    };
+  }
+
+  function formatCoordinate(value, isLatitude) {
+    if (!Number.isFinite(value)) return "—";
+    const positive = value >= 0;
+    const absolute = Math.abs(value);
+    const degrees = Math.floor(absolute);
+    const minutes = (absolute - degrees) * 60;
+    const degreeWidth = isLatitude ? 2 : 3;
+    const degreeText = String(degrees).padStart(degreeWidth, "0");
+    const minuteText = minutes.toFixed(3).padStart(6, "0");
+    const hemisphere = isLatitude ? (positive ? "N" : "S") : (positive ? "E" : "W");
+    return degreeText + "°" + minuteText + "′" + hemisphere;
+  }
+
+  function snapshotPositionText(snapshot) {
+    if (!snapshot || !snapshot.position.available) return "—";
+    const pos = snapshot.position;
+    const latText = pos.latText || formatCoordinate(pos.latitude, true);
+    const lonText = pos.lonText || formatCoordinate(pos.longitude, false);
+    if (latText === "—" || lonText === "—") return "—";
+    return latText + "  " + lonText;
+  }
+
+  function positionForRadio() {
+    const text = snapshotPositionText(state.snapshot);
+    return text === "—" ? "[POSITION FROM ECDIS]" : text;
+  }
+
+  function displayNumber(value, decimals) {
+    if (!Number.isFinite(value)) return "—";
+    return value.toFixed(decimals);
+  }
+
+  function cleanValue(value, fallback) {
+    const text = String(value == null ? "" : value).trim();
+    return text || fallback;
+  }
+
+  function verifiedNumberText(value, minimum, maximum, fallback) {
+    const text = String(value == null ? "" : value).trim();
+    const number = Number(text);
+    return text && Number.isFinite(number) && number >= minimum && number <= maximum
+      ? text
+      : fallback;
+  }
+
+  function verifiedCourseText(value) {
+    const text = String(value == null ? "" : value).trim();
+    const number = Number(text);
+    return text && Number.isFinite(number) && number >= 0 && number < 360
+      ? String(Math.round(number) % 360).padStart(3, "0")
+      : "[VERIFY TRUE COURSE ON ECDIS]";
+  }
+
+  function spokenDigits(value) {
+    const words = {
+      "0": "ZERO", "1": "ONE", "2": "TWO", "3": "THREE", "4": "FOUR",
+      "5": "FIVE", "6": "SIX", "7": "SEVEN", "8": "EIGHT", "9": "NINE"
+    };
+    return String(value || "").split("").map((char) => words[char] || char).join(" ");
+  }
+
+  function spokenCallSign(value) {
+    const words = {
+      A: "ALFA", B: "BRAVO", C: "CHARLIE", D: "DELTA", E: "ECHO", F: "FOXTROT",
+      G: "GOLF", H: "HOTEL", I: "INDIA", J: "JULIETT", K: "KILO", L: "LIMA",
+      M: "MIKE", N: "NOVEMBER", O: "OSCAR", P: "PAPA", Q: "QUEBEC", R: "ROMEO",
+      S: "SIERRA", T: "TANGO", U: "UNIFORM", V: "VICTOR", W: "WHISKEY",
+      X: "X-RAY", Y: "YANKEE", Z: "ZULU",
+      "0": "ZERO", "1": "ONE", "2": "TWO", "3": "THREE", "4": "FOUR",
+      "5": "FIVE", "6": "SIX", "7": "SEVEN", "8": "EIGHT", "9": "NINE"
+    };
+    return String(value || "").toUpperCase().split("").map((char) => words[char] || char).join(" ");
+  }
+
+  function buildScripts() {
+    const data = state.reportData;
+    const ship = cleanValue(data.shipName, "VORTEX BULK").toUpperCase();
+    const callSign = cleanValue(data.callSign, "V4ND7").toUpperCase();
+    const imo = cleanValue(data.imo, "9189926");
+    const position = positionForRadio();
+    const speed = state.snapshot && Number.isFinite(state.snapshot.position.speedKn)
+      ? state.snapshot.position.speedKn.toFixed(1) + " KNOTS"
+      : "[SPEED FROM ECDIS] KNOTS";
+    const draftFwd = verifiedNumberText(data.draftFwd, 0, 30, "[VERIFY DRAFT FWD]");
+    const draftAft = verifiedNumberText(data.draftAft, 0, 30, "[VERIFY DRAFT AFT]");
+    const airDraft = verifiedNumberText(data.airDraft, 0, 100, "[VERIFY AIR DRAFT]");
+    const trueCourse = verifiedCourseText(data.trueCourse);
+    const lastPort = cleanValue(data.lastPort, "[ENTER LAST PORT]").toUpperCase();
+    const nextPort = cleanValue(data.nextPort, "[ENTER NEXT PORT]").toUpperCase();
+    const eta = cleanValue(data.eta, "[ENTER ETA LOCAL]").toUpperCase();
+    const heightChanged = cleanValue(data.heightChanged, "");
+    const pbg = cleanValue(data.pbg, "[PBG NOT YET ASSIGNED]").toUpperCase();
+    const dangerousCargo = cleanValue(data.dangerousCargo, "[VERIFY YES/NO + CLASS]").toUpperCase();
+    const defects = cleanValue(data.defects, "[VERIFY NIL / DETAILS]").toUpperCase();
+    const pollution = cleanValue(data.pollution, "[VERIFY NIL / DETAILS]").toUpperCase();
+    const coaDestination = pbg !== "[PBG NOT YET ASSIGNED]" ? pbg : nextPort;
+    const coaHeightLine = heightChanged
+      ? "\nHEIGHT CHANGE FROM NOA: " + heightChanged.toUpperCase() + "."
+      : "\n[STATE HEIGHT ONLY IF IT DIFFERS FROM THE NOA — VERIFY.]";
+
+    return [
+      `KLANG VTS, KLANG VTS, THIS IS ${ship}, ${ship}, CALL SIGN ${spokenCallSign(callSign)}, IMO ${spokenDigits(imo)}. STRAITREP REPORT. OVER.
+
+A — ${ship}; CALL SIGN ${callSign}; IMO ${imo}.
+C — POSITION ${position}.
+E — TRUE COURSE ${trueCourse} DEGREES.
+F — SPEED ${speed}.
+P — DANGEROUS CARGO: ${dangerousCargo}.
+Q — DEFECTS OR LIMITATIONS: ${defects}.
+R — POLLUTION OR DANGEROUS GOODS LOST: ${pollution}.
+
+IF REQUESTED — DRAFT FORWARD ${draftFwd} METRES; AFT ${draftAft} METRES; AIR DRAFT ${airDraft} METRES; LAST PORT ${lastPort}; NEXT PORT ${nextPort}; ETA ${eta}.`,
+
+      `VTIS WEST, VTIS WEST, THIS IS ${ship}, CALL SIGN ${callSign}.
+PULAU IYU KECHIL LIGHT ABEAM. CALLING SINGAPORE.
+POSITION ${position}.
+ETA AT ${coaDestination} ${eta}.${coaHeightLine}
+OVER.
+
+[KEEP JOHOR VTS CHANNEL 88 ON THE SECOND VHF UNTIL SECTOR 6 TO 7 HANDOVER.]`,
+
+      `AFTER JOHOR VTS HANDOVER ONLY:
+
+JOHOR VTS, THIS IS ${ship}, ${callSign}. ROGER, CHANGING TO CHANNEL 73. OUT.
+
+VTIS WEST, VTIS WEST, THIS IS ${ship}, ${callSign}, EASTBOUND ENTERING SECTOR 7.
+POSITION ${position}. OVER.
+
+[SHORT CALL ONLY. DO NOT REPEAT THE FULL STRAITREP REPORT UNLESS REQUESTED.]`,
+
+      `AFTER VTIS WEST HANDOVER ONLY:
+
+VTIS WEST, THIS IS ${ship}, ${callSign}. ROGER, CHANGING TO CHANNEL 14. OUT.
+
+VTIS CENTRAL, VTIS CENTRAL, THIS IS ${ship}, ${callSign}, EASTBOUND ENTERING SECTOR 8.
+POSITION ${position}. OVER.
+
+[REMAIN ON CHANNEL 14. CHANNEL 10 IS NOT ON THE CURRENT ROUTE UNLESS VTIS DIRECTS OTHERWISE.]`
+    ];
+  }
+
+  function buildSupplementaryScripts() {
+    const data = state.reportData;
+    const ship = cleanValue(data.shipName, "VORTEX BULK").toUpperCase();
+    const callSign = cleanValue(data.callSign, "V4ND7").toUpperCase();
+    const position = positionForRadio();
+    const draftFwd = verifiedNumberText(data.draftFwd, 0, 30, "[VERIFY DRAFT FWD]");
+    const draftAft = verifiedNumberText(data.draftAft, 0, 30, "[VERIFY DRAFT AFT]");
+    const airDraft = verifiedNumberText(data.airDraft, 0, 100, "[VERIFY AIR DRAFT]");
+    const destination = cleanValue(data.pbg || data.nextPort, "[VERIFY ASSIGNED DESTINATION]").toUpperCase();
+    const movement = cleanValue(data.movementRequest, "[VERIFY MOVEMENT REQUEST]").toUpperCase();
+    const defects = cleanValue(data.defects, "[VERIFY NIL / DETAILS]").toUpperCase();
+    const booking = cleanValue(data.pilotBooking, "[VERIFY BOOKING REFERENCE]").toUpperCase();
+    const pilotTime = cleanValue(data.pilotTime, "[VERIFY BOOKED PILOT TIME SGT]").toUpperCase();
+    const eta = cleanValue(data.eta, "[VERIFY ETA LOCAL]").toUpperCase();
+
+    return [
+      {
+        title: "EAST CONTROL — CH 12",
+        script: `TEMPLATE — USE ONLY WHEN REQUIRED FOR THE EAST PORT SECTOR:\n\nEAST CONTROL, EAST CONTROL, THIS IS ${ship}, CALL SIGN ${callSign}.\nPRESENT POSITION ${position}.\nDRAFT FORWARD ${draftFwd} METRES, AFT ${draftAft} METRES. AIR DRAFT ${airDraft} METRES.\nASSIGNED DESTINATION ${destination}. DEFECTS ${defects}.\nREQUEST CLEARANCE TO ${movement}. OVER.`
+      },
+      {
+        title: "SINGAPORE PILOTS — CH 20",
+        script: `TEMPLATE — USE ONLY WITH A CONFIRMED PILOT BOOKING / INSTRUCTION:\n\nSINGAPORE PILOTS, SINGAPORE PILOTS, THIS IS ${ship}, CALL SIGN ${callSign}.\nPILOT BOOKING REFERENCE ${booking}.\nASSIGNED PILOT BOARDING GROUND ${cleanValue(data.pbg, "[PBG NOT YET ASSIGNED]").toUpperCase()}.\nBOOKED PILOT TIME ${pilotTime}. ETA ${eta}.\nPRESENT POSITION ${position}. REQUEST BOARDING INSTRUCTIONS. OVER.`
+      }
+    ];
+  }
+
+  function currentEventDefinition() {
+    return ROUTE_EVENTS[state.eventIndex] || ROUTE_EVENTS[0];
+  }
+
+  function mergeNativeEvent(base, nativeEvent) {
+    if (!nativeEvent) return base;
+    return {
+      ...base,
+      title: cleanValue(nativeEvent.title, base.title),
+      station: cleanValue(nativeEvent.station, base.station),
+      channel: normalizeChannel(cleanValue(nativeEvent.channel, base.channel)),
+      action: cleanValue(nativeEvent.action, base.action),
+      note: cleanValue(nativeEvent.note, base.note)
+    };
+  }
+
+  function normalizeChannel(channel) {
+    const text = String(channel || "").trim().toUpperCase();
+    if (!text) return "—";
+    if (/^\d+$/.test(text)) return "CH " + text;
+    return text.replace(/^CH(?:ANNEL)?\s*/, "CH ");
+  }
+
+  function render() {
+    const snapshot = state.snapshot;
+    if (snapshot) state.eventIndex = snapshot.eventIndex;
+    const event = mergeNativeEvent(currentEventDefinition(), snapshot && snapshot.event);
+
+    renderMonitor(snapshot);
+    renderSoundSafety(snapshot);
+    renderEvent(snapshot, event);
+    renderRoute(snapshot);
+    renderScripts(event);
+    updateBridgeAvailability();
+  }
+
+  function renderMonitor(snapshot) {
+    const armed = !!(snapshot && snapshot.armed);
+    el.armedState.textContent = armed ? "مسلح / ARMED" : "غير مسلح";
+    el.armedState.className = "state-pill " + (armed ? "state-on" : "state-off");
+
+    if (!snapshot) {
+      el.gpsState.textContent = state.bridgeConnected ? "بانتظار GPS" : "BRIDGE غير متصل";
+      el.gpsState.className = "state-pill " + (state.bridgeConnected ? "state-wait" : "state-error");
+      el.positionValue.textContent = "—";
+      el.accuracyValue.textContent = "—";
+      el.fixAgeValue.textContent = "—";
+      el.speedValue.textContent = "—";
+      el.goodFixValue.textContent = "0 / " + REQUIRED_GOOD_FIXES;
+      el.statusMessage.textContent = state.bridgeConnected
+        ? "شغّل المراقبة واسمح بالموقع الدقيق."
+        : "Native GPS bridge غير متصل — افتح الصفحة من التطبيق المثبت.";
+      el.qualityWarning.classList.add("hidden");
+      return;
+    }
+
+    const pos = snapshot.position;
+    const quality = evaluateFixQuality(snapshot);
+    el.gpsState.textContent = quality.label;
+    el.gpsState.className = "state-pill " + quality.className;
+    el.positionValue.textContent = snapshotPositionText(snapshot);
+    el.accuracyValue.textContent = displayNumber(pos.accuracyM, 0);
+    el.fixAgeValue.textContent = displayNumber(pos.ageSeconds, 0);
+    el.speedValue.textContent = displayNumber(pos.speedKn, 1);
+    el.goodFixValue.textContent = Math.min(snapshot.goodFixCount, REQUIRED_GOOD_FIXES) + " / " + REQUIRED_GOOD_FIXES;
+    el.statusMessage.textContent = snapshot.statusMessage || defaultStatusMessage(snapshot, quality);
+
+    const warnings = [];
+    if (snapshot.permissionFineLocation === false) warnings.push("صلاحية الموقع الدقيق غير مسموحة");
+    if (snapshot.permissionNotifications === false || snapshot.safety.notificationChannels === false) warnings.push("إشعارات الإنذار مقفولة");
+    if (snapshot.safety.gpsEnabled === false) warnings.push("GPS الجهاز مقفول");
+    if (snapshot.safety.alarmVolumeUsable === false) warnings.push("Alarm volume صفر أو غير مسموع");
+    if (snapshot.safety.dndAllowsAlarm === false) warnings.push("Do Not Disturb على Total Silence");
+    if (pos.mock) warnings.push("MOCK LOCATION مرفوض — طابق الموقع على ECDIS فورًا");
+    if (Number.isFinite(pos.accuracyM) && pos.accuracyM > MAX_ACCURACY_M) warnings.push("دقة GPS أسوأ من " + MAX_ACCURACY_M + " متر");
+    if (Number.isFinite(pos.ageSeconds) && pos.ageSeconds > MAX_FIX_AGE_S) warnings.push("GPS fix أقدم من " + MAX_FIX_AGE_S + " ثانية");
+    if (warnings.length) {
+      el.qualityWarning.textContent = warnings.join(" · ");
+      el.qualityWarning.classList.remove("hidden");
+    } else {
+      el.qualityWarning.classList.add("hidden");
+    }
+  }
+
+  function renderSoundSafety(snapshot) {
+    const confirmed = !!(snapshot && snapshot.safety && snapshot.safety.soundTestConfirmed);
+    el.soundConfirmState.textContent = confirmed ? "مؤكد / PASSED" : "غير مؤكد";
+    el.soundConfirmState.className = "sound-state " + (confirmed ? "is-confirmed" : "is-unconfirmed");
+    el.alarmVolumeValue.textContent = snapshot && snapshot.safety
+      ? formatAlarmVolume(snapshot.safety.alarmVolume, snapshot.safety.alarmVolumeMax)
+      : "—";
+
+    if (confirmed) state.soundTestStarted = false;
+    const testEvidence = !!(snapshot && (
+      String(snapshot.alarmKind || "").toUpperCase() === "TEST" ||
+      String(snapshot.statusMessage || "").toUpperCase().includes("ALARM TEST")
+    ));
+    const shouldShowConfirmation = !confirmed && state.soundTestStarted && testEvidence;
+    el.confirmSoundButton.classList.toggle("hidden", !shouldShowConfirmation);
+  }
+
+  function formatAlarmVolume(value, maximum) {
+    if (value == null || value === "") return "—";
+    if (typeof value === "object") {
+      const current = numberOrNull(firstDefined([value.current, value.value, value.level], null));
+      const max = numberOrNull(firstDefined([value.max, value.maximum], maximum));
+      if (current != null && max != null && max > 0) {
+        return current + "/" + max + " (" + Math.round((current / max) * 100) + "%)";
+      }
+    }
+    const numeric = numberOrNull(value);
+    if (numeric == null) return String(value);
+    if (maximum != null && maximum > 0) return numeric + "/" + maximum + " (" + Math.round((numeric / maximum) * 100) + "%)";
+    if (numeric >= 0 && numeric <= 1) return Math.round(numeric * 100) + "%";
+    if (numeric >= 0 && numeric <= 100) return Math.round(numeric) + "%";
+    return String(numeric);
+  }
+
+  function evaluateFixQuality(snapshot) {
+    const pos = snapshot.position;
+    const gpsStatus = String(snapshot.gpsStatus || "").toUpperCase();
+    if (pos.mock || gpsStatus.includes("MOCK")) return { label: "MOCK GPS", className: "state-error", good: false };
+    if (snapshot.permissionFineLocation === false || gpsStatus.includes("DENIED")) return { label: "GPS مرفوض", className: "state-error", good: false };
+    if (gpsStatus.includes("DISABLED") || gpsStatus.includes("OFF")) return { label: "GPS مقفول", className: "state-error", good: false };
+    if (!pos.available) return { label: "بانتظار GPS", className: "state-wait", good: false };
+    if (Number.isFinite(pos.accuracyM) && pos.accuracyM > MAX_ACCURACY_M) return { label: "دقة ضعيفة", className: "state-error", good: false };
+    if (Number.isFinite(pos.ageSeconds) && pos.ageSeconds > MAX_FIX_AGE_S) return { label: "FIX قديم", className: "state-error", good: false };
+    if (snapshot.goodFixCount < REQUIRED_GOOD_FIXES) return { label: "تثبيت " + snapshot.goodFixCount + "/" + REQUIRED_GOOD_FIXES, className: "state-wait", good: false };
+    return { label: "GPS جيد", className: "state-on", good: true };
+  }
+
+  function defaultStatusMessage(snapshot, quality) {
+    if (snapshot.safety.gpsEnabled === false) return "ARM مقفول: شغّل GPS / Location على الجهاز.";
+    if (snapshot.permissionNotifications === false || snapshot.safety.notificationChannels === false) return "ARM مقفول: اسمح بإشعارات الإنذار.";
+    if (snapshot.safety.alarmVolumeUsable === false) return "ARM مقفول: ارفع Alarm volume ثم اختبر الصوت.";
+    if (snapshot.safety.dndAllowsAlarm === false) return "ARM مقفول: ألغِ Do Not Disturb / Total Silence.";
+    if (!snapshot.safety.soundTestConfirmed) return "ARM مقفول: شغّل اختبار الصوت والاهتزاز ثم أكد إنك سمعته.";
+    if (snapshot.routeComplete) return "تم إنهاء نقاط الروت الأربع. استمر في متابعة VTIS Central على CH14.";
+    if (snapshot.alarmActive) return snapshot.alarmAcknowledged ? "تم إسكات الإنذار؛ أكمل الاتصال ثم اضغط «تم النداء»." : "إنذار اتصال فعال — راجع المحطة والقناة واضغط ACK.";
+    if (!snapshot.serviceRunning) return "خدمة الموقع متوقفة.";
+    if (!snapshot.armed) return quality.good ? "GPS ثابت وجاهز للتسليح." : "يلزم 3 GPS fixes جيدة قبل التسليح.";
+    return quality.good ? "المراقبة مسلحة وتعمل في المقدمة." : "المراقبة تعمل لكن جودة GPS غير كافية للإنذار الدقيق.";
+  }
+
+  function renderEvent(snapshot, event) {
+    const count = snapshot ? snapshot.eventCount : ROUTE_EVENTS.length;
+    el.eventCounter.textContent = (state.eventIndex + 1) + " / " + count;
+    el.distanceValue.textContent = snapshot ? displayNumber(snapshot.evaluation.distanceNm, 2) : "—";
+    el.eventTitle.textContent = event.title;
+    el.stationValue.textContent = event.station;
+    el.channelValue.textContent = event.channel;
+    el.eventAction.textContent = event.action;
+    el.eventNote.textContent = event.note;
+
+    const stage = snapshot ? String(snapshot.stage || "STANDBY").toUpperCase() : "STANDBY";
+    el.alarmStage.textContent = STAGE_LABELS[stage] || stage.replace(/_/g, " ");
+
+    const alarmActive = !!(snapshot && snapshot.alarmActive);
+    const acknowledged = !!(snapshot && snapshot.alarmAcknowledged);
+    const testAlarm = !!(snapshot && String(snapshot.alarmKind).toUpperCase() === "TEST");
+    el.ackButton.disabled = !alarmActive || acknowledged || testAlarm;
+    el.alarmAckButton.disabled = !alarmActive || acknowledged;
+    el.alarmAckButton.textContent = testAlarm ? "إسكات الاختبار" : "ACK / إسكات";
+    el.completeButton.disabled = !snapshot || !snapshot.armRequested || snapshot.routeComplete;
+
+    if (alarmActive && !acknowledged) {
+      el.alarmTitle.textContent = testAlarm ? "اختبار الصوت والاهتزاز" : alarmTitle(snapshot.alarmKind, stage);
+      el.alarmTarget.textContent = testAlarm ? "TEST ONLY — NOT A VHF CALL" : event.station + " — " + event.channel;
+      el.alarmPanel.classList.remove("hidden");
+    } else {
+      el.alarmPanel.classList.add("hidden");
+    }
+  }
+
+  function alarmTitle(kind, stage) {
+    const text = (kind + " " + stage).toUpperCase();
+    if (text.includes("5") || text.includes("APPROACH")) return "استعد للنداء";
+    if (text.includes("2") || text.includes("WARNING")) return "راجع القناة وجهز التقرير";
+    if (text.includes("0.5") || text.includes("CALL") || text.includes("CROSS")) return "ميعاد النداء الآن";
+    return "تنبيه VHF فعال";
+  }
+
+  function renderRoute(snapshot) {
+    const cards = Array.from(el.cueList.querySelectorAll(".cue-card"));
+    cards.forEach((card, index) => {
+      const status = card.querySelector(".cue-status");
+      card.classList.toggle("is-current", !snapshot || (!snapshot.routeComplete && index === state.eventIndex));
+      card.classList.toggle("is-complete", !!snapshot && (snapshot.routeComplete || index < state.eventIndex));
+
+      if (snapshot && (snapshot.routeComplete || index < state.eventIndex)) {
+        status.textContent = "تم";
+      } else if (index === state.eventIndex) {
+        status.textContent = "التالي";
+      } else {
+        status.textContent = "قادم";
+      }
+    });
+
+    let progress = ((state.eventIndex + 0.5) / ROUTE_EVENTS.length) * 100;
+    if (snapshot && snapshot.routeComplete) progress = 100;
+    el.routeProgressFill.style.width = Math.max(0, Math.min(100, progress)) + "%";
+  }
+
+  function renderScripts(event) {
+    const scripts = buildScripts();
+    const index = state.eventIndex;
+    el.scriptStation.textContent = event.station;
+    el.scriptChannel.textContent = event.channel;
+    el.currentScript.textContent = scripts[index];
+    el.scriptRule.textContent = ROUTE_EVENTS[index].rule;
+
+    el.allScripts.textContent = "";
+    ROUTE_EVENTS.forEach((routeEvent, routeIndex) => {
+      const card = document.createElement("article");
+      card.className = "script-card";
+      const header = document.createElement("header");
+      const title = document.createElement("span");
+      const channel = document.createElement("strong");
+      const script = document.createElement("pre");
+      title.textContent = (routeIndex + 1) + ". " + routeEvent.station;
+      channel.textContent = routeEvent.channel;
+      script.dir = "ltr";
+      script.textContent = scripts[routeIndex];
+      header.append(title, channel);
+      card.append(header, script);
+      el.allScripts.append(card);
+    });
+    buildSupplementaryScripts().forEach((item) => {
+      const card = document.createElement("article");
+      card.className = "script-card supplemental";
+      const header = document.createElement("header");
+      const title = document.createElement("span");
+      const channel = document.createElement("strong");
+      const script = document.createElement("pre");
+      title.textContent = item.title;
+      channel.textContent = "NO GPS ALARM";
+      script.dir = "ltr";
+      script.textContent = item.script;
+      header.append(title, channel);
+      card.append(header, script);
+      el.allScripts.append(card);
+    });
+  }
+
+  function updateBridgeAvailability() {
+    const connected = !!getBridge();
+    const soundConfirmed = !!(state.snapshot && state.snapshot.safety && state.snapshot.safety.soundTestConfirmed);
+    const canArm = !!(state.snapshot && state.snapshot.canArm);
+    const monitoring = !!(state.snapshot && state.snapshot.armRequested);
+    state.bridgeConnected = connected;
+    el.startButton.disabled = !connected || !soundConfirmed || !canArm || monitoring;
+    el.stopButton.disabled = !connected || !monitoring;
+    el.testButton.disabled = !connected || monitoring;
+    el.completeButton.disabled = !connected || !monitoring || !!(state.snapshot && state.snapshot.routeComplete);
+  }
+
+  function showToast(message, isError) {
+    window.clearTimeout(state.toastTimer);
+    el.toast.textContent = message;
+    el.toast.classList.toggle("error", !!isError);
+    el.toast.classList.add("show");
+    state.toastTimer = window.setTimeout(() => el.toast.classList.remove("show"), 2600);
+  }
+
+  function readFormData() {
+    const formData = new FormData(el.reportForm);
+    const next = {};
+    Object.keys(DEFAULT_REPORT_DATA).forEach((key) => {
+      next[key] = String(formData.get(key) == null ? "" : formData.get(key)).trim();
+    });
+    return next;
+  }
+
+  function fillForm(data) {
+    Object.keys(DEFAULT_REPORT_DATA).forEach((key) => {
+      const input = byId(key);
+      if (input) input.value = data[key] == null ? DEFAULT_REPORT_DATA[key] : String(data[key]);
+    });
+  }
+
+  function loadReportData() {
+    let cached = null;
+    try {
+      cached = parseJson(localStorage.getItem(STORAGE_KEY));
+    } catch (_) {
+      cached = null;
+    }
+
+    const nativeResult = callBridge("getBridgeData", [], { silent: true });
+    const nativeData = nativeResult.ok ? parseJson(nativeResult.result) : null;
+    state.reportData = {
+      ...DEFAULT_REPORT_DATA,
+      ...(cached && typeof cached === "object" ? cached : {}),
+      ...(nativeData && typeof nativeData === "object" ? nativeData : {})
+    };
+    // Vessel identity is fixed for this private VORTEX BULK build.
+    state.reportData.shipName = DEFAULT_REPORT_DATA.shipName;
+    state.reportData.callSign = DEFAULT_REPORT_DATA.callSign;
+    state.reportData.imo = DEFAULT_REPORT_DATA.imo;
+    state.reportData.mmsi = DEFAULT_REPORT_DATA.mmsi;
+    fillForm(state.reportData);
+  }
+
+  function saveReportData(showConfirmation) {
+    state.reportData = readFormData();
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state.reportData));
+    } catch (_) {
+      showToast("تعذر الحفظ المحلي على الجهاز.", true);
+    }
+    callBridge("saveBridgeData", [JSON.stringify(state.reportData)], { silent: true });
+    el.saveState.textContent = "محفوظ · " + new Date().toLocaleTimeString("ar-EG", { hour: "2-digit", minute: "2-digit" });
+    renderScripts(mergeNativeEvent(currentEventDefinition(), state.snapshot && state.snapshot.event));
+    if (showConfirmation) showToast("تم حفظ البيانات وتحديث نص النداء.");
+  }
+
+  function startMonitoring() {
+    const soundConfirmed = !!(state.snapshot && state.snapshot.safety && state.snapshot.safety.soundTestConfirmed);
+    if (!soundConfirmed) {
+      showToast("لا يمكن التسليح قبل اختبار الصوت والاهتزاز وتأكيد سماعه.", true);
+      return;
+    }
+    const result = callBridge(["arm", "startMonitoring"]);
+    if (result.ok) showToast("جاري تشغيل GPS وتجهيز الإنذارات…");
+    pollSnapshot();
+  }
+
+  function stopMonitoring() {
+    const result = callBridge(["disarm", "stopMonitoring"]);
+    if (result.ok) showToast("تم إيقاف المراقبة.");
+    pollSnapshot();
+  }
+
+  function acknowledgeAlarm() {
+    const result = callBridge(["silenceAlarm", "acknowledgeAlarm", "acknowledge"]);
+    if (result.ok) showToast("تم إسكات الإنذار فقط — أكمل النداء ثم اضغط «تم النداء». ");
+    pollSnapshot();
+  }
+
+  function completeCurrentEvent() {
+    const event = currentEventDefinition();
+    const confirmed = window.confirm("هل تم الاتصال فعليًا بـ " + event.station + " على " + event.channel + "؟");
+    if (!confirmed) return;
+    const result = callBridge("completeCurrentEvent");
+    if (result.ok) showToast("تم تسجيل النقطة والانتقال إلى التالية.");
+    pollSnapshot();
+  }
+
+  function selectEvent(index) {
+    const nextIndex = clampEventIndex(index);
+    if (state.snapshot && state.snapshot.armRequested) {
+      showToast("أوقف المراقبة قبل مزامنة النقطة الحالية.", true);
+      return;
+    }
+    if (state.snapshot && String(state.snapshot.alarmKind).toUpperCase() === "TEST") {
+      showToast("أنهِ اختبار الصوت قبل تغيير النقطة.", true);
+      return;
+    }
+    if (nextIndex !== state.eventIndex) {
+      const accepted = window.confirm(
+        "تغيير النقطة التالية إلى رقم " + (nextIndex + 1) + "؟\n\n" +
+        "نفّذ ذلك فقط بعد مطابقة الموقع والمرحلة على ECDIS ومع تعليمات VTS."
+      );
+      if (!accepted) return;
+    }
+    const result = callBridge("setCurrentEvent", [nextIndex], { silent: true });
+    if (!result.ok && getBridge()) {
+      showToast("النسخة الحالية تمنع تخطي التسلسل؛ استخدم «تم النداء» للتقدم.", true);
+      return;
+    }
+    state.eventIndex = nextIndex;
+    if (state.snapshot) state.snapshot.eventIndex = nextIndex;
+    render();
+    if (result.ok) showToast("تم اختيار النقطة " + (nextIndex + 1) + ". راجع موقعها على ECDIS.");
+  }
+
+  function testAlarm() {
+    const result = callBridge(["testAlarm", "soundTest"]);
+    if (result.ok) {
+      state.soundTestStarted = true;
+      showToast("جاري طلب اختبار الصوت والاهتزاز — زر التأكيد يظهر بعد بدء الاختبار فعليًا.");
+      window.setTimeout(pollSnapshot, 350);
+    }
+  }
+
+  function confirmSoundTest() {
+    if (!state.soundTestStarted) {
+      showToast("شغّل اختبار الصوت الأول.", true);
+      return;
+    }
+    const result = callBridge("confirmSoundTest");
+    if (result.ok) {
+      showToast("جاري التحقق من التأكيد؛ ARM سيتاح فقط إذا كان الاختبار قد عمل فعليًا.");
+      pollSnapshot();
+    }
+  }
+
+  function copyCurrentScript() {
+    const text = el.currentScript.textContent;
+    if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+      navigator.clipboard.writeText(text)
+        .then(() => showToast("تم نسخ نص النداء."))
+        .catch(() => fallbackCopy(text));
+      return;
+    }
+    fallbackCopy(text);
+  }
+
+  function fallbackCopy(text) {
+    const textarea = document.createElement("textarea");
+    textarea.value = text;
+    textarea.setAttribute("readonly", "");
+    textarea.style.position = "fixed";
+    textarea.style.opacity = "0";
+    document.body.appendChild(textarea);
+    textarea.select();
+    try {
+      const copied = document.execCommand("copy");
+      showToast(copied ? "تم نسخ نص النداء." : "حدد النص وانسخه يدويًا.", !copied);
+    } catch (_) {
+      showToast("حدد النص وانسخه يدويًا.", true);
+    }
+    textarea.remove();
+  }
+
+  function pollSnapshot() {
+    const result = callBridge("getSnapshot", [], { silent: true });
+    if (!result.ok) {
+      updateBridgeAvailability();
+      if (!state.snapshot) render();
+      return;
+    }
+    const normalized = normalizeSnapshot(result.result);
+    if (normalized) receiveSnapshot(normalized);
+  }
+
+  function receiveSnapshot(snapshot) {
+    state.snapshot = snapshot;
+    state.bridgeConnected = true;
+    state.eventIndex = snapshot.eventIndex;
+    state.lastSnapshotAt = Date.now();
+    if (String(snapshot.alarmKind || "").toUpperCase() === "TEST"
+        || String(snapshot.statusMessage || "").toUpperCase().includes("ALARM TEST")) {
+      state.soundTestStarted = true;
+    }
+
+    render();
+  }
+
+  function bindEvents() {
+    el.startButton.addEventListener("click", startMonitoring);
+    el.stopButton.addEventListener("click", stopMonitoring);
+    el.testButton.addEventListener("click", testAlarm);
+    el.confirmSoundButton.addEventListener("click", confirmSoundTest);
+    el.ackButton.addEventListener("click", acknowledgeAlarm);
+    el.alarmAckButton.addEventListener("click", acknowledgeAlarm);
+    el.completeButton.addEventListener("click", completeCurrentEvent);
+    el.copyScriptButton.addEventListener("click", copyCurrentScript);
+
+    el.cueList.addEventListener("click", (event) => {
+      const card = event.target.closest("[data-event-index]");
+      if (!card) return;
+      selectEvent(Number(card.dataset.eventIndex));
+    });
+
+    el.reportForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      saveReportData(true);
+    });
+
+    let saveTimer = null;
+    el.reportForm.addEventListener("input", () => {
+      el.saveState.textContent = "تعديل غير محفوظ…";
+      window.clearTimeout(saveTimer);
+      saveTimer = window.setTimeout(() => saveReportData(false), 450);
+    });
+
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) pollSnapshot();
+    });
+  }
+
+  window.onNativeSnapshot = function (json) {
+    const normalized = normalizeSnapshot(json);
+    if (normalized) receiveSnapshot(normalized);
+  };
+
+  function init() {
+    cacheElements();
+    state.bridgeConnected = !!getBridge();
+    loadReportData();
+    bindEvents();
+    render();
+    pollSnapshot();
+    window.setInterval(pollSnapshot, 1000);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init, { once: true });
+  } else {
+    init();
+  }
+})();
+
+</script>
+</body>
+</html>
