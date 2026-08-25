@@ -1,0 +1,81 @@
+name: Build VORTEX BULK VHF APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'vortex-vhf-android/**'
+      - 'VORTEX_BULK_VHF_ALARM_ANDROID_SOURCE_v1.0.0.zip'
+      - '.github/workflows/build-vhf-apk.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  build-debug-apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Unpack audited Android source archive when present
+        shell: bash
+        run: |
+          if [ -f VORTEX_BULK_VHF_ALARM_ANDROID_SOURCE_v1.0.0.zip ]; then
+            unzip -q -o VORTEX_BULK_VHF_ALARM_ANDROID_SOURCE_v1.0.0.zip
+          fi
+          test -f vortex-vhf-android/app/src/main/AndroidManifest.xml
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android SDK 35
+        shell: bash
+        run: |
+          yes | sdkmanager --licenses >/dev/null
+          sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+
+      - name: Set up Gradle 8.9
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Run unit tests and build installable debug APK
+        working-directory: vortex-vhf-android
+        run: gradle :app:testDebugUnitTest :app:assembleDebug --no-daemon --stacktrace
+
+      - name: Verify manifest permissions and prepare artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK='vortex-vhf-android/app/build/outputs/apk/debug/app-debug.apk'
+          AAPT="$ANDROID_HOME/build-tools/35.0.0/aapt"
+          mkdir -p output
+          "$AAPT" dump permissions "$APK" | tee output/manifest-permissions.txt
+          if grep -Eq 'android.permission.(INTERNET|ACCESS_BACKGROUND_LOCATION)' output/manifest-permissions.txt; then
+            echo 'Forbidden permission detected.' >&2
+            exit 1
+          fi
+          grep -q 'android.permission.ACCESS_FINE_LOCATION' output/manifest-permissions.txt
+          grep -q 'android.permission.FOREGROUND_SERVICE_LOCATION' output/manifest-permissions.txt
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$APK" | tee output/signature-verification.txt
+          "$AAPT" dump badging "$APK" | head -20 > output/apk-badging.txt
+          cp "$APK" output/VORTEX_BULK_VHF_ALARM_v1.0.0.apk
+          (cd output && sha256sum VORTEX_BULK_VHF_ALARM_v1.0.0.apk > VORTEX_BULK_VHF_ALARM_v1.0.0.sha256)
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: VORTEX_BULK_VHF_ALARM_v1.0.0
+          path: output/
+          if-no-files-found: error
+          retention-days: 30
